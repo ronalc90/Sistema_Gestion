@@ -1,0 +1,481 @@
+{
+  "common": {
+    "appName": "Management System",
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "actions": "Actions",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "yes": "Yes",
+    "no": "No",
+    "active": "Active",
+    "inactive": "Inactive",
+    "status": "Status",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "description": "Description",
+    "code": "Code",
+    "type": "Type",
+    "date": "Date",
+    "time": "Time",
+    "required": "Required",
+    "optional": "Optional",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "noResults": "No results found",
+    "confirmDelete": "Are you sure you want to delete?",
+    "deleteWarning": "This action cannot be undone",
+    "bulkUpload": "Bulk upload",
+    "bulkUpdate": "Bulk update",
+    "downloadTemplate": "Download template",
+    "dragAndDrop": "Drag and drop files here",
+    "or": "or",
+    "browse": "Browse files",
+    "fileTooLarge": "File is too large",
+    "invalidFileType": "Invalid file type",
+    "rows": "Rows",
+    "page": "Page",
+    "of": "of",
+    "showing": "Showing",
+    "to": "to",
+    "total": "total",
+    "details": "Details",
+    "list": "List",
+    "options": "Options",
+    "underConstruction": "Under construction",
+    "moduleInDev": "This module is under development. Soon you will be able to manage all information related to {{title}}.",
+    "confirmDeleteItem": "Delete \"{{name}}\"?",
+    "employee": "Employee",
+    "file": "File",
+    "saving": "Saving...",
+    "querying": "Querying...",
+    "query": "Query",
+    "clear": "Clear",
+    "results": "Results",
+    "records": "records",
+    "headquarter": "Headquarter",
+    "selectOption": "Select...",
+    "noEmployee": "No employee assigned",
+    "idType": "ID Type",
+    "idNumber": "ID Number",
+    "contractor": "Contractor",
+    "costCenter": "Cost Center",
+    "position": "Position",
+    "salary": "Salary",
+    "hireDate": "Hire date"
+  },
+  "auth": {
+    "login": "Sign in",
+    "logout": "Sign out",
+    "register": "Register",
+    "forgotPassword": "Forgot your password?",
+    "resetPassword": "Reset password",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "rememberMe": "Remember me",
+    "loginSubtitle": "Enter your credentials to continue",
+    "invalidCredentials": "Invalid credentials. Please try again.",
+    "sessionExpired": "Your session has expired",
+    "unauthorized": "Unauthorized",
+    "enterEmail": "Enter your email",
+    "enterPassword": "Enter your password",
+    "email": "Email"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "management": "Management",
+    "sgsst": "OHSMS",
+    "planning": "Planning",
+    "employees": "Employees",
+    "activities": "Activities",
+    "contractors": "Contractors",
+    "documents": "Documents",
+    "costCenters": "Cost Centers",
+    "visitors": "Visitors",
+    "destinations": "Destinations",
+    "reports": "Reports",
+    "headquarters": "Headquarters",
+    "settings": "Settings",
+    "profile": "Profile",
+    "help": "Help",
+    "menu": "Menu",
+    "sgsstGroups": {
+      "company": "Company & Diagnosis",
+      "admin": "Administration",
+      "gestion": "HSE Management",
+      "personal": "Personnel",
+      "health": "Health & Accidents",
+      "evaluations": "Evaluations",
+      "contractors": "Contractors & Risks",
+      "improvement": "Continuous Improvement",
+      "emergencies": "Emergencies",
+      "special": "Special"
+    }
+  },
+  "modules": {
+    "planning": {
+      "title": "Planning",
+      "positions": "Positions",
+      "bulkUpload": "Bulk upload",
+      "positionPlanning": "Position Planning",
+      "addPlanning": "Add Planning",
+      "editPlanning": "Edit Planning",
+      "contractor": "Contractor",
+      "headquarter": "Headquarter",
+      "position": "Position",
+      "quantity": "Quantity",
+      "startDate": "Start date",
+      "endDate": "End date"
+    },
+    "employees": {
+      "title": "Employees",
+      "list": "List employees",
+      "add": "Add employee",
+      "edit": "Edit employee",
+      "bulkUpload": "Bulk upload",
+      "bulkUpdate": "Bulk update",
+      "personalInfo": "Personal information",
+      "workInfo": "Work information",
+      "benefits": "Benefits",
+      "documents": "Documents",
+      "idType": "ID type",
+      "idNumber": "ID number",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "birthDate": "Birth date",
+      "gender": "Gender",
+      "position": "Position",
+      "hireDate": "Hire date",
+      "terminationDate": "Termination date",
+      "salary": "Salary",
+      "eps": "Health Insurance",
+      "pensionFund": "Pension fund",
+      "arl": "Occupational Risk Insurance",
+      "emergencyContact": "Emergency contact",
+      "emergencyPhone": "Emergency phone",
+      "detail": "Employee Details",
+      "costCenter": "Cost Center",
+      "contractor": "Contractor",
+      "sectionId": "Identification",
+      "sectionContact": "Contact",
+      "sectionWork": "Work Information",
+      "sectionSocial": "Social Security",
+      "bulkUpdateConfig": "Configure Update",
+      "fieldToUpdate": "Field to update",
+      "newValue": "New value",
+      "selectField": "Select field",
+      "applying": "Applying...",
+      "applyTo": "Apply to {{count}} employee(s)",
+      "selected": "selected",
+      "nContractor": "No contractor",
+      "nCostCenter": "No cost center",
+      "addPlanning": "Add Planning"
+    },
+    "activities": {
+      "title": "Activities",
+      "add": "Add activity",
+      "edit": "Edit activity",
+      "new": "New Activity",
+      "detail": "Activity Details"
+    },
+    "contractors": {
+      "title": "Contractors",
+      "add": "Add contractor",
+      "edit": "Edit contractor",
+      "new": "New Contractor",
+      "detail": "Contractor Details",
+      "nit": "Tax ID",
+      "representative": "Legal representative"
+    },
+    "documents": {
+      "title": "Documents",
+      "upload": "Upload document",
+      "new": "Upload Document",
+      "download": "Download",
+      "view": "View document",
+      "delete": "Delete document",
+      "detail": "Document Details",
+      "types": {
+        "contract": "Contract",
+        "id": "ID Card",
+        "cv": "Resume",
+        "certificate": "Certificate",
+        "license": "License",
+        "medical": "Medical exam",
+        "policy": "Insurance Policy",
+        "other": "Other",
+        "CONTRATO": "Contract",
+        "CEDULA": "ID Card",
+        "HV": "Resume",
+        "CERTIFICADO": "Certificate",
+        "LICENCIA": "License",
+        "EXAMEN_MEDICO": "Medical Exam",
+        "POLIZA": "Insurance Policy",
+        "OTRO": "Other"
+      }
+    },
+    "costCenters": {
+      "title": "Cost Centers",
+      "add": "Add cost center",
+      "edit": "Edit cost center",
+      "new": "New Cost Center",
+      "detail": "Cost Center Details",
+      "budget": "Budget"
+    },
+    "visitors": {
+      "title": "Visitors",
+      "register": "Register visitor",
+      "new": "Register Visitor",
+      "editVisitor": "Edit Visitor",
+      "detail": "Visitor Details",
+      "checkOut": "Register exit",
+      "personal": "Personal",
+      "business": "Business",
+      "supplier": "Supplier",
+      "client": "Client",
+      "other": "Other",
+      "onSite": "On site",
+      "completed": "Completed",
+      "identification": "Identification",
+      "company": "Company",
+      "reason": "Reason",
+      "entryDate": "Entry date",
+      "exitDate": "Exit date"
+    },
+    "destinations": {
+      "title": "Destinations",
+      "add": "Add destination",
+      "edit": "Edit destination",
+      "new": "New Destination",
+      "detail": "Destination Details"
+    },
+    "headquarters": {
+      "title": "Headquarters",
+      "list": "Headquarters list",
+      "add": "Add headquarter",
+      "edit": "Edit headquarter",
+      "city": "City",
+      "manager": "Manager",
+      "restTime": "Rest time",
+      "collectionName": "Collection name",
+      "schedules": "Schedules",
+      "initialDate": "Initial date",
+      "finalDate": "End date"
+    },
+    "reports": {
+      "title": "Reports",
+      "generate": "Generate report",
+      "export": "Export",
+      "print": "Print",
+      "filters": "Report Filters",
+      "selectType": "Report",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "idNumber": "ID Number",
+      "query": "Query",
+      "querying": "Querying...",
+      "download": "Download",
+      "clear": "Clear",
+      "results": "Results",
+      "records": "records",
+      "selectToStart": "Select a report type to start",
+      "filtersAdjust": "Available filters will adjust based on the selected report",
+      "selectContractor": "Select contractor",
+      "selectGender": "Select Gender",
+      "enterIdNumber": "Enter ID number"
+    }
+  },
+  "sgsst": {
+    "title": "OHSMS",
+    "subtitle": "Occupational Health and Safety Management System",
+    "company": {
+      "title": "Company Details",
+      "info": "Company information"
+    },
+    "diagnosis": {
+      "title": "Initial Diagnosis",
+      "initial": "Diagnosis"
+    },
+    "periods": {
+      "title": "Work Periods",
+      "workPeriods": "Work periods"
+    },
+    "legalMatrix": {
+      "title": "Legal Matrix Compliance",
+      "compliance": "Legal compliance"
+    },
+    "activityPlanner": {
+      "title": "Activity Planner",
+      "annualPlan": "Annual plan"
+    },
+    "riskManagement": {
+      "title": "Risk Management",
+      "risks": "Risk identification"
+    },
+    "documentManagement": {
+      "title": "Document Management",
+      "documents": "OHSMS Documents"
+    },
+    "indicators": {
+      "title": "Indicator Sheets",
+      "kpi": "Management indicators"
+    },
+    "workers": {
+      "title": "My Workers",
+      "myWorkers": "Worker management"
+    },
+    "jobProfiles": {
+      "title": "Job Profiles & HSE",
+      "profiles": "Job profiles"
+    },
+    "absenteeism": {
+      "title": "Absenteeism Reports",
+      "reports": "Absenteeism control"
+    },
+    "occupationalHealth": {
+      "title": "Occupational Health",
+      "medical": "Medical exams"
+    },
+    "accidents": {
+      "title": "Incidents & Accidents",
+      "incidents": "Accident investigation"
+    },
+    "psychosocial": {
+      "title": "Psychosocial Battery",
+      "battery": "Psychosocial assessment"
+    },
+    "tar": {
+      "title": "H.S.W. Management",
+      "highRisk": "High risk work"
+    },
+    "contractors": {
+      "title": "OHSMS Contractors",
+      "sst": "OHSMS contractor management"
+    },
+    "unsafeConditions": {
+      "title": "Unsafe Acts & Conditions",
+      "reports": "Condition reports"
+    },
+    "improvement": {
+      "title": "Improvement Matrix",
+      "matrix": "Improvement plan"
+    },
+    "correctiveActions": {
+      "title": "Corrective Actions",
+      "actions": "Action tracking"
+    },
+    "inspections": {
+      "title": "Safety Inspections",
+      "safety": "Scheduled inspections"
+    },
+    "emergency": {
+      "title": "Emergency Plans",
+      "plans": "Plans & brigades"
+    },
+    "drills": {
+      "title": "Drill Evaluation",
+      "evaluation": "Drills & training"
+    },
+    "roadSafety": {
+      "title": "Road Safety",
+      "vial": "Road safety plan"
+    },
+    "chemicals": {
+      "title": "Chemical Management",
+      "management": "Chemical substances"
+    },
+    "accessControl": {
+      "title": "Access Control",
+      "control": "Entry/exit control"
+    }
+  },
+  "enums": {
+    "gender": {
+      "MASCULINO": "Male",
+      "FEMENINO": "Female",
+      "OTRO": "Other",
+      "PREFIERO_NO_DECIR": "Prefer not to say"
+    },
+    "idType": {
+      "CC": "Citizen ID",
+      "CE": "Foreigner ID",
+      "PASAPORTE": "Passport",
+      "NIT": "Tax ID"
+    },
+    "employeeStatus": {
+      "ACTIVO": "Active",
+      "INACTIVO": "Inactive",
+      "VACACIONES": "On vacation",
+      "INCAPACITADO": "Disabled"
+    },
+    "planningStatus": {
+      "PENDIENTE": "Pending",
+      "EN_PROGRESO": "In progress",
+      "COMPLETADA": "Completed",
+      "CANCELADA": "Cancelled"
+    },
+    "visitorType": {
+      "PERSONAL": "Personal",
+      "EMPRESARIAL": "Business",
+      "PROVEEDOR": "Supplier",
+      "CLIENTE": "Client",
+      "OTRO": "Other"
+    },
+    "visitorStatus": {
+      "EN_SITIO": "On site",
+      "FINALIZADA": "Completed"
+    }
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "toggle": "Toggle theme"
+  },
+  "language": {
+    "es": "Español",
+    "en": "English",
+    "select": "Select language"
+  },
+  "errors": {
+    "generic": "An error has occurred",
+    "notFound": "Page not found",
+    "serverError": "Server error",
+    "networkError": "Network error",
+    "unauthorized": "You don't have permission to perform this action",
+    "required": "This field is required",
+    "invalidEmail": "Invalid email",
+    "invalidDate": "Invalid date",
+    "minLength": "Must be at least {{count}} characters",
+    "maxLength": "Must not exceed {{count}} characters",
+    "minValue": "Minimum value is {{value}}",
+    "maxValue": "Maximum value is {{value}}"
+  },
+  "success": {
+    "saved": "Saved successfully",
+    "updated": "Updated successfully",
+    "deleted": "Deleted successfully",
+    "uploaded": "Uploaded successfully",
+    "login": "Welcome",
+    "logout": "Session closed"
+  }
+}

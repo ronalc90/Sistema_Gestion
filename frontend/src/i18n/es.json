@@ -1,0 +1,481 @@
+{
+  "common": {
+    "appName": "Sistema de Gestión",
+    "welcome": "Bienvenido",
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "add": "Agregar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "actions": "Acciones",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "yes": "Sí",
+    "no": "No",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "status": "Estado",
+    "createdAt": "Fecha de creación",
+    "updatedAt": "Fecha de actualización",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "description": "Descripción",
+    "code": "Código",
+    "type": "Tipo",
+    "date": "Fecha",
+    "time": "Hora",
+    "required": "Requerido",
+    "optional": "Opcional",
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Advertencia",
+    "info": "Información",
+    "noResults": "No se encontraron resultados",
+    "confirmDelete": "¿Está seguro de que desea eliminar?",
+    "deleteWarning": "Esta acción no se puede deshacer",
+    "bulkUpload": "Carga masiva",
+    "bulkUpdate": "Actualización masiva",
+    "downloadTemplate": "Descargar plantilla",
+    "dragAndDrop": "Arrastre y suelte archivos aquí",
+    "or": "o",
+    "browse": "Explorar archivos",
+    "fileTooLarge": "El archivo es demasiado grande",
+    "invalidFileType": "Tipo de archivo no válido",
+    "rows": "Filas",
+    "page": "Página",
+    "of": "de",
+    "showing": "Mostrando",
+    "to": "a",
+    "total": "total",
+    "details": "Detalles",
+    "list": "Lista",
+    "options": "Opciones",
+    "underConstruction": "En construcción",
+    "moduleInDev": "Este módulo está en desarrollo. Pronto podrás gestionar toda la información relacionada con {{title}}.",
+    "confirmDeleteItem": "¿Eliminar \"{{name}}\"?",
+    "employee": "Empleado",
+    "file": "Archivo",
+    "saving": "Guardando...",
+    "querying": "Consultando...",
+    "query": "Consultar",
+    "clear": "Limpiar",
+    "results": "Resultados",
+    "records": "registros",
+    "headquarter": "Sede",
+    "selectOption": "Seleccionar...",
+    "noEmployee": "Sin empleado asignado",
+    "idType": "Tipo de identificación",
+    "idNumber": "Número de identificación",
+    "contractor": "Contratista",
+    "costCenter": "Centro de costo",
+    "position": "Cargo",
+    "salary": "Salario",
+    "hireDate": "Fecha de ingreso"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "register": "Registrarse",
+    "forgotPassword": "¿Olvidó su contraseña?",
+    "resetPassword": "Restablecer contraseña",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "rememberMe": "Recordarme",
+    "loginSubtitle": "Ingrese sus credenciales para continuar",
+    "invalidCredentials": "Credenciales incorrectas. Intente nuevamente.",
+    "sessionExpired": "Su sesión ha expirado",
+    "unauthorized": "No autorizado",
+    "enterEmail": "Ingrese su correo electrónico",
+    "enterPassword": "Ingrese su contraseña",
+    "email": "Correo electrónico"
+  },
+  "navigation": {
+    "dashboard": "Panel de control",
+    "management": "Gestión",
+    "sgsst": "SGSST",
+    "planning": "Planificación",
+    "employees": "Empleados",
+    "activities": "Actividades",
+    "contractors": "Contratistas",
+    "documents": "Documentos",
+    "costCenters": "Centros de costos",
+    "visitors": "Visitantes",
+    "destinations": "Destinos",
+    "reports": "Reportes",
+    "headquarters": "Sedes",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "help": "Ayuda",
+    "menu": "Menú",
+    "sgsstGroups": {
+      "company": "Empresa y Diagnóstico",
+      "admin": "Administración",
+      "gestion": "Gestión SST",
+      "personal": "Personal",
+      "health": "Medicina y Accidentes",
+      "evaluations": "Evaluaciones",
+      "contractors": "Contratistas y Riesgos",
+      "improvement": "Mejora continua",
+      "emergencies": "Emergencias",
+      "special": "Especiales"
+    }
+  },
+  "modules": {
+    "planning": {
+      "title": "Planificación",
+      "positions": "Cargos",
+      "bulkUpload": "Carga masiva",
+      "positionPlanning": "Planificación de cargos",
+      "addPlanning": "Agregar planificación",
+      "editPlanning": "Editar planificación",
+      "contractor": "Contratista",
+      "headquarter": "Sede",
+      "position": "Cargo",
+      "quantity": "Cantidad",
+      "startDate": "Fecha inicio",
+      "endDate": "Fecha fin"
+    },
+    "employees": {
+      "title": "Empleados",
+      "list": "Listar empleados",
+      "add": "Agregar empleado",
+      "edit": "Editar empleado",
+      "bulkUpload": "Carga masiva",
+      "bulkUpdate": "Actualización masiva",
+      "personalInfo": "Información personal",
+      "workInfo": "Información laboral",
+      "benefits": "Beneficios",
+      "documents": "Documentos",
+      "idType": "Tipo de identificación",
+      "idNumber": "Número de identificación",
+      "firstName": "Nombres",
+      "lastName": "Apellidos",
+      "birthDate": "Fecha de nacimiento",
+      "gender": "Género",
+      "position": "Cargo",
+      "hireDate": "Fecha de ingreso",
+      "terminationDate": "Fecha de retiro",
+      "salary": "Salario",
+      "eps": "EPS",
+      "pensionFund": "Fondo de pensiones",
+      "arl": "ARL",
+      "emergencyContact": "Contacto de emergencia",
+      "emergencyPhone": "Teléfono de emergencia",
+      "detail": "Detalle del Empleado",
+      "costCenter": "Centro de costo",
+      "contractor": "Contratista",
+      "sectionId": "Identificación",
+      "sectionContact": "Contacto",
+      "sectionWork": "Información Laboral",
+      "sectionSocial": "Seguridad Social",
+      "bulkUpdateConfig": "Configurar actualización",
+      "fieldToUpdate": "Campo a actualizar",
+      "newValue": "Nuevo valor",
+      "selectField": "Seleccionar campo",
+      "applying": "Aplicando...",
+      "applyTo": "Aplicar a {{count}} empleado(s)",
+      "selected": "seleccionados",
+      "nContractor": "Sin contratista",
+      "nCostCenter": "Sin centro de costo",
+      "addPlanning": "Agregar Planificación"
+    },
+    "activities": {
+      "title": "Actividades",
+      "add": "Agregar actividad",
+      "edit": "Editar actividad",
+      "new": "Nueva Actividad",
+      "detail": "Detalle Actividad"
+    },
+    "contractors": {
+      "title": "Contratistas",
+      "add": "Agregar contratista",
+      "edit": "Editar contratista",
+      "new": "Nuevo Contratista",
+      "detail": "Detalle Contratista",
+      "nit": "NIT",
+      "representative": "Representante legal"
+    },
+    "documents": {
+      "title": "Documentos",
+      "upload": "Subir documento",
+      "new": "Cargar Documento",
+      "download": "Descargar",
+      "view": "Ver documento",
+      "delete": "Eliminar documento",
+      "detail": "Detalle Documento",
+      "types": {
+        "contract": "Contrato",
+        "id": "Cédula",
+        "cv": "Hoja de vida",
+        "certificate": "Certificado",
+        "license": "Licencia",
+        "medical": "Examen médico",
+        "policy": "Póliza",
+        "other": "Otro",
+        "CONTRATO": "Contrato",
+        "CEDULA": "Cédula",
+        "HV": "Hoja de vida",
+        "CERTIFICADO": "Certificado",
+        "LICENCIA": "Licencia",
+        "EXAMEN_MEDICO": "Examen médico",
+        "POLIZA": "Póliza",
+        "OTRO": "Otro"
+      }
+    },
+    "costCenters": {
+      "title": "Centros de costos",
+      "add": "Agregar centro de costo",
+      "edit": "Editar centro de costo",
+      "new": "Nuevo Centro de Costos",
+      "detail": "Detalle Centro de Costos",
+      "budget": "Presupuesto"
+    },
+    "visitors": {
+      "title": "Visitantes",
+      "register": "Registrar visitante",
+      "new": "Registrar Visitante",
+      "editVisitor": "Editar Visitante",
+      "detail": "Detalle Visitante",
+      "checkOut": "Registrar salida",
+      "personal": "Personal",
+      "business": "Empresarial",
+      "supplier": "Proveedor",
+      "client": "Cliente",
+      "other": "Otro",
+      "onSite": "En sitio",
+      "completed": "Finalizada",
+      "identification": "Identificación",
+      "company": "Empresa",
+      "reason": "Motivo",
+      "entryDate": "Fecha de entrada",
+      "exitDate": "Fecha de salida"
+    },
+    "destinations": {
+      "title": "Destinos",
+      "add": "Agregar destino",
+      "edit": "Editar destino",
+      "new": "Nuevo Destino",
+      "detail": "Detalle Destino"
+    },
+    "headquarters": {
+      "title": "Sedes",
+      "list": "Lista de sedes",
+      "add": "Agregar sede",
+      "edit": "Editar sede",
+      "city": "Ciudad",
+      "manager": "Encargado",
+      "restTime": "Tiempo de descanso",
+      "collectionName": "Nombre colección",
+      "schedules": "Horarios",
+      "initialDate": "Fecha inicial",
+      "finalDate": "Fecha final"
+    },
+    "reports": {
+      "title": "Reportes",
+      "generate": "Generar reporte",
+      "export": "Exportar",
+      "print": "Imprimir",
+      "filters": "Filtros del Reporte",
+      "selectType": "Reporte",
+      "startDate": "Fecha Inicio",
+      "endDate": "Fecha Fin",
+      "idNumber": "Número de identificación",
+      "query": "Consultar",
+      "querying": "Consultando...",
+      "download": "Descargar",
+      "clear": "Limpiar",
+      "results": "Resultados",
+      "records": "registros",
+      "selectToStart": "Seleccione un tipo de reporte para comenzar",
+      "filtersAdjust": "Los filtros disponibles se ajustarán según el reporte elegido",
+      "selectContractor": "Seleccionar contratista",
+      "selectGender": "Seleccionar Género",
+      "enterIdNumber": "Ingrese número de identificación"
+    }
+  },
+  "sgsst": {
+    "title": "SGSST",
+    "subtitle": "Sistema de Gestión de Seguridad y Salud en el Trabajo",
+    "company": {
+      "title": "Detalles de mi empresa",
+      "info": "Información de la empresa"
+    },
+    "diagnosis": {
+      "title": "Diagnóstico inicial",
+      "initial": "Diagnóstico"
+    },
+    "periods": {
+      "title": "Períodos de trabajo",
+      "workPeriods": "Períodos laborales"
+    },
+    "legalMatrix": {
+      "title": "Cumplimiento Matriz legal",
+      "compliance": "Cumplimiento legal"
+    },
+    "activityPlanner": {
+      "title": "Planeador de actividades",
+      "annualPlan": "Plan anual"
+    },
+    "riskManagement": {
+      "title": "Gestión de riesgos",
+      "risks": "Identificación de riesgos"
+    },
+    "documentManagement": {
+      "title": "Gestión documental",
+      "documents": "Documentos SST"
+    },
+    "indicators": {
+      "title": "Fichas de indicadores",
+      "kpi": "Indicadores de gestión"
+    },
+    "workers": {
+      "title": "Mis trabajadores",
+      "myWorkers": "Gestión de trabajadores"
+    },
+    "jobProfiles": {
+      "title": "Perfiles de cargo y S.V.E",
+      "profiles": "Perfiles de cargo"
+    },
+    "absenteeism": {
+      "title": "Reporte de ausentismos",
+      "reports": "Control de ausentismo"
+    },
+    "occupationalHealth": {
+      "title": "Medicina laboral",
+      "medical": "Exámenes médicos"
+    },
+    "accidents": {
+      "title": "Incidentes y accidentes",
+      "incidents": "Investigación de accidentes"
+    },
+    "psychosocial": {
+      "title": "Batería psicosocial",
+      "battery": "Evaluación psicosocial"
+    },
+    "tar": {
+      "title": "Gestión T.A.R.",
+      "highRisk": "Trabajos de alto riesgo"
+    },
+    "contractors": {
+      "title": "Contratistas SST",
+      "sst": "Gestión contratistas SST"
+    },
+    "unsafeConditions": {
+      "title": "Actos y Condiciones Inseguras",
+      "reports": "Reportes de condiciones"
+    },
+    "improvement": {
+      "title": "Matriz de mejora",
+      "matrix": "Plan de mejora"
+    },
+    "correctiveActions": {
+      "title": "Acciones correctivas",
+      "actions": "Seguimiento acciones"
+    },
+    "inspections": {
+      "title": "Inspecciones de seguridad",
+      "safety": "Inspecciones programadas"
+    },
+    "emergency": {
+      "title": "Planes de emergencia",
+      "plans": "Planes y brigadas"
+    },
+    "drills": {
+      "title": "Evaluación de Simulacros",
+      "evaluation": "Simulacros y capacitaciones"
+    },
+    "roadSafety": {
+      "title": "Seguridad vial",
+      "vial": "Plan de seguridad vial"
+    },
+    "chemicals": {
+      "title": "Gestión de químicos",
+      "management": "Sustancias químicas"
+    },
+    "accessControl": {
+      "title": "Controles de acceso",
+      "control": "Control de ingreso/egreso"
+    }
+  },
+  "enums": {
+    "gender": {
+      "MASCULINO": "Masculino",
+      "FEMENINO": "Femenino",
+      "OTRO": "Otro",
+      "PREFIERO_NO_DECIR": "Prefiero no decir"
+    },
+    "idType": {
+      "CC": "Cédula de ciudadanía",
+      "CE": "Cédula de extranjería",
+      "PASAPORTE": "Pasaporte",
+      "NIT": "NIT"
+    },
+    "employeeStatus": {
+      "ACTIVO": "Activo",
+      "INACTIVO": "Inactivo",
+      "VACACIONES": "Vacaciones",
+      "INCAPACITADO": "Incapacitado"
+    },
+    "planningStatus": {
+      "PENDIENTE": "Pendiente",
+      "EN_PROGRESO": "En progreso",
+      "COMPLETADA": "Completada",
+      "CANCELADA": "Cancelada"
+    },
+    "visitorType": {
+      "PERSONAL": "Personal",
+      "EMPRESARIAL": "Empresarial",
+      "PROVEEDOR": "Proveedor",
+      "CLIENTE": "Cliente",
+      "OTRO": "Otro"
+    },
+    "visitorStatus": {
+      "EN_SITIO": "En sitio",
+      "FINALIZADA": "Finalizada"
+    }
+  },
+  "theme": {
+    "light": "Modo claro",
+    "dark": "Modo oscuro",
+    "toggle": "Cambiar tema"
+  },
+  "language": {
+    "es": "Español",
+    "en": "English",
+    "select": "Seleccionar idioma"
+  },
+  "errors": {
+    "generic": "Ha ocurrido un error",
+    "notFound": "Página no encontrada",
+    "serverError": "Error del servidor",
+    "networkError": "Error de conexión",
+    "unauthorized": "No tiene permisos para realizar esta acción",
+    "required": "Este campo es obligatorio",
+    "invalidEmail": "Correo electrónico no válido",
+    "invalidDate": "Fecha no válida",
+    "minLength": "Debe tener al menos {{count}} caracteres",
+    "maxLength": "No debe exceder {{count}} caracteres",
+    "minValue": "El valor mínimo es {{value}}",
+    "maxValue": "El valor máximo es {{value}}"
+  },
+  "success": {
+    "saved": "Guardado exitosamente",
+    "updated": "Actualizado exitosamente",
+    "deleted": "Eliminado exitosamente",
+    "uploaded": "Subido exitosamente",
+    "login": "Bienvenido",
+    "logout": "Sesión cerrada"
+  }
+}

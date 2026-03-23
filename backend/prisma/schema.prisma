@@ -1,0 +1,459 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// MODELO DE USUARIOS Y AUTENTICACIÓN
+// ==========================================
+
+enum RolUsuario {
+  ADMIN_TOTAL
+  ADMIN
+  USUARIO
+  SUPERVISOR
+}
+
+enum EstadoUsuario {
+  ACTIVO
+  INACTIVO
+  BLOQUEADO
+}
+
+model User {
+  id          String        @id @default(uuid())
+  nombre      String
+  email       String        @unique
+  password    String
+  rol         RolUsuario    @default(USUARIO)
+  estado      EstadoUsuario @default(ACTIVO)
+  lastLogin   DateTime?     @map("last_login")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  // Relaciones
+  planificacionesCreadas Planificacion[] @relation("PlanificacionCreador")
+  visitantesRegistrados  Visitante[]     @relation("VisitanteRegistrador")
+  documentosSubidos      Documento[]     @relation("DocumentoCreador")
+  logs                   UserLog[]
+
+  @@map("users")
+}
+
+// ==========================================
+// LOGS DE ACTIVIDAD DE USUARIOS
+// ==========================================
+
+enum AccionLog {
+  LOGIN
+  LOGOUT
+  CREAR_USUARIO
+  EDITAR_USUARIO
+  ELIMINAR_USUARIO
+  CAMBIAR_PASSWORD
+}
+
+model UserLog {
+  id        String     @id @default(uuid())
+  accion    AccionLog
+  ip        String?
+  userAgent String?    @map("user_agent")
+  metadata  String?
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  userId    String     @map("user_id")
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_logs")
+}
+
+// ==========================================
+// SEDES
+// ==========================================
+
+enum EstadoSede {
+  ACTIVO
+  INACTIVO
+}
+
+model Sede {
+  id               String       @id @default(uuid())
+  nombre           String
+  estado           EstadoSede   @default(ACTIVO)
+  tiempoDescanso   String?      @map("tiempo_descanso")
+  fechaInicial     DateTime?    @map("fecha_inicial")
+  fechaFinal       DateTime?    @map("fecha_final")
+  nombreColeccion  String?      @map("nombre_coleccion")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+
+  // Relaciones
+  centroCostoId    String?      @map("centro_costo_id")
+  centroCosto      CentroCosto? @relation(fields: [centroCostoId], references: [id])
+  horarios              HorarioSede[]
+  empleados             Empleado[]
+  destinos              Destino[]
+  visitantes            Visitante[]
+  planificacionesCargos PlanificacionCargo[]
+
+  @@map("sedes")
+}
+
+model HorarioSede {
+  id         String  @id @default(uuid())
+  dia        String  // LUNES | MARTES | MIERCOLES | JUEVES | VIERNES | SABADO | DOMINGO
+  activo     Boolean @default(false)
+  horaInicio String? @map("hora_inicio")
+  horaFin    String? @map("hora_fin")
+
+  sedeId     String  @map("sede_id")
+  sede       Sede    @relation(fields: [sedeId], references: [id], onDelete: Cascade)
+
+  @@unique([sedeId, dia])
+  @@map("horarios_sede")
+}
+
+// ==========================================
+// CONTRATISTAS
+// ==========================================
+
+enum EstadoContratista {
+  ACTIVO
+  INACTIVO
+}
+
+model Contratista {
+  id              String            @id @default(uuid())
+  nombre          String
+  nit             String?           @unique
+  representante   String?
+  telefono        String?
+  email           String?
+  direccion       String?
+  estado          EstadoContratista @default(ACTIVO)
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  // Relaciones
+  empleados              Empleado[]
+  planificaciones        Planificacion[]
+  planificacionesCargos  PlanificacionCargo[]
+
+  @@map("contratistas")
+}
+
+// ==========================================
+// CENTROS DE COSTOS
+// ==========================================
+
+model CentroCosto {
+  id          String   @id @default(uuid())
+  codigo      String   @unique
+  nombre      String
+  descripcion String?
+  presupuesto Decimal? @db.Decimal(15, 2)
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  sedes       Sede[]
+  empleados   Empleado[]
+
+  @@map("centros_costos")
+}
+
+// ==========================================
+// EMPLEADOS
+// ==========================================
+
+enum TipoIdentificacion {
+  CC
+  CE
+  PASAPORTE
+  NIT
+}
+
+enum EstadoEmpleado {
+  ACTIVO
+  INACTIVO
+  VACACIONES
+  INCAPACITADO
+}
+
+enum Genero {
+  MASCULINO
+  FEMENINO
+  OTRO
+  PREFIERO_NO_DECIR
+}
+
+model Empleado {
+  id                String             @id @default(uuid())
+  tipoId            TipoIdentificacion @default(CC) @map("tipo_id")
+  numeroId          String             @map("numero_id")
+  nombres           String
+  apellidos         String
+  email             String?
+  telefono          String?
+  fechaNacimiento   DateTime?          @map("fecha_nacimiento")
+  genero            Genero?
+  direccion         String?
+  cargo             String?
+  fechaIngreso      DateTime           @default(now()) @map("fecha_ingreso")
+  fechaRetiro       DateTime?          @map("fecha_retiro")
+  salario           Decimal?           @db.Decimal(12, 2)
+  estado            EstadoEmpleado     @default(ACTIVO)
+  eps               String?
+  fondoPensiones    String?            @map("fondo_pensiones")
+  arl               String?
+  contactoEmergencia String?           @map("contacto_emergencia")
+  telefonoEmergencia String?           @map("telefono_emergencia")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  // Relaciones
+  sedeId            String             @map("sede_id")
+  sede              Sede               @relation(fields: [sedeId], references: [id])
+  
+  contratistaId     String?            @map("contratista_id")
+  contratista       Contratista?       @relation(fields: [contratistaId], references: [id])
+  
+  centroCostoId     String?            @map("centro_costo_id")
+  centroCosto       CentroCosto?       @relation(fields: [centroCostoId], references: [id])
+  
+  planificaciones   Planificacion[]
+  turnos            Turno[]
+  documentos        Documento[]
+
+  @@unique([tipoId, numeroId])
+  @@map("empleados")
+}
+
+// ==========================================
+// ACTIVIDADES
+// ==========================================
+
+model Actividad {
+  id          String   @id @default(uuid())
+  codigo      String   @unique
+  nombre      String
+  descripcion String?
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relaciones
+  planificaciones Planificacion[]
+
+  @@map("actividades")
+}
+
+// ==========================================
+// DESTINOS
+// ==========================================
+
+enum EstadoDestino {
+  ACTIVO
+  INACTIVO
+}
+
+model Destino {
+  id          String        @id @default(uuid())
+  nombre      String
+  descripcion String?
+  estado      EstadoDestino @default(ACTIVO)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  // Relaciones
+  sedeId      String        @map("sede_id")
+  sede        Sede          @relation(fields: [sedeId], references: [id])
+  
+  planificaciones Planificacion[]
+
+  @@map("destinos")
+}
+
+// ==========================================
+// PLANIFICACIÓN
+// ==========================================
+
+enum EstadoPlanificacion {
+  PENDIENTE
+  EN_PROGRESO
+  COMPLETADA
+  CANCELADA
+}
+
+model Planificacion {
+  id              String              @id @default(uuid())
+  fecha           DateTime
+  descripcion     String?
+  estado          EstadoPlanificacion @default(PENDIENTE)
+  horaInicio      DateTime?           @map("hora_inicio")
+  horaFin         DateTime?           @map("hora_fin")
+  observaciones   String?
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  // Relaciones
+  creadorId       String              @map("creador_id")
+  creador         User                @relation("PlanificacionCreador", fields: [creadorId], references: [id])
+  
+  empleadoId      String              @map("empleado_id")
+  empleado        Empleado            @relation(fields: [empleadoId], references: [id])
+  
+  contratistaId   String?             @map("contratista_id")
+  contratista     Contratista?        @relation(fields: [contratistaId], references: [id])
+  
+  actividadId     String?             @map("actividad_id")
+  actividad       Actividad?          @relation(fields: [actividadId], references: [id])
+  
+  destinoId       String?             @map("destino_id")
+  destino         Destino?            @relation(fields: [destinoId], references: [id])
+
+  @@map("planificaciones")
+}
+
+model PlanificacionCargo {
+  id            String      @id @default(uuid())
+  cargo         String
+  cantidad      Int
+  fechaInicio   DateTime    @map("fecha_inicio")
+  fechaFin      DateTime    @map("fecha_fin")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  contratistaId String      @map("contratista_id")
+  contratista   Contratista @relation(fields: [contratistaId], references: [id])
+
+  sedeId        String      @map("sede_id")
+  sede          Sede        @relation(fields: [sedeId], references: [id])
+
+  @@map("planificaciones_cargos")
+}
+
+// ==========================================
+// TURNOS
+// ==========================================
+
+enum TipoTurno {
+  DIURNO
+  NOCTURNO
+  MIXTO
+  FIN_DE_SEMANA
+  FESTIVO
+}
+
+enum EstadoTurno {
+  PROGRAMADO
+  EN_CURSO
+  COMPLETADO
+  CANCELADO
+}
+
+model Turno {
+  id          String      @id @default(uuid())
+  fecha       DateTime
+  tipo        TipoTurno   @default(DIURNO)
+  horaInicio  DateTime    @map("hora_inicio")
+  horaFin     DateTime    @map("hora_fin")
+  estado      EstadoTurno @default(PROGRAMADO)
+  observaciones String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  // Relaciones
+  empleadoId  String      @map("empleado_id")
+  empleado    Empleado    @relation(fields: [empleadoId], references: [id])
+
+  @@map("turnos")
+}
+
+// ==========================================
+// VISITANTES
+// ==========================================
+
+enum TipoVisitante {
+  PERSONAL
+  EMPRESARIAL
+  PROVEEDOR
+  CLIENTE
+  OTRO
+}
+
+enum EstadoVisitante {
+  EN_SITIO
+  FINALIZADA
+}
+
+model Visitante {
+  id              String          @id @default(uuid())
+  tipo            TipoVisitante   @default(PERSONAL)
+  nombre          String
+  identificacion  String?
+  empresa         String?
+  telefono        String?
+  email           String?
+  motivo          String
+  fechaEntrada    DateTime        @default(now()) @map("fecha_entrada")
+  fechaSalida     DateTime?       @map("fecha_salida")
+  estado          EstadoVisitante @default(EN_SITIO)
+  observaciones   String?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relaciones
+  sedeId          String          @map("sede_id")
+  sede            Sede            @relation(fields: [sedeId], references: [id])
+  
+  registradoPorId String          @map("registrado_por_id")
+  registradoPor   User            @relation("VisitanteRegistrador", fields: [registradoPorId], references: [id])
+
+  @@map("visitantes")
+}
+
+// ==========================================
+// DOCUMENTOS
+// ==========================================
+
+enum TipoDocumento {
+  CONTRATO
+  CEDULA
+  HV
+  CERTIFICADO
+  LICENCIA
+  EXAMEN_MEDICO
+  POLIZA
+  OTRO
+}
+
+model Documento {
+  id          String        @id @default(uuid())
+  nombre      String
+  tipo        TipoDocumento
+  descripcion String?
+  url         String
+  tamanio     Int           @map("tamanio")
+  mimeType    String        @map("mime_type")
+  carpeta     String        @default("general")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  // Relaciones
+  empleadoId  String?       @map("empleado_id")
+  empleado    Empleado?     @relation(fields: [empleadoId], references: [id])
+  
+  subidoPorId String        @map("subido_por_id")
+  subidoPor   User          @relation("DocumentoCreador", fields: [subidoPorId], references: [id])
+
+  @@map("documentos")
+}

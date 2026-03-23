@@ -1,0 +1,20 @@
+# Claude / AI tools - never commit
+.claude/
+CLAUDE.md
+memory/
+.understand-anything/
+
+# Node
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Build
+frontend/dist/
+backend/dist/
