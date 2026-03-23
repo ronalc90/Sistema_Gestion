@@ -102,6 +102,7 @@
     "email": "Email"
   },
   "navigation": {
+    "home": "Home",
     "dashboard": "Dashboard",
     "management": "Management",
     "sgsst": "OHSMS",

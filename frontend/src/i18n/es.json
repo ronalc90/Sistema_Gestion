@@ -102,6 +102,7 @@
     "email": "Correo electrónico"
   },
   "navigation": {
+    "home": "Inicio",
     "dashboard": "Panel de control",
     "management": "Gestión",
     "sgsst": "SGSST",

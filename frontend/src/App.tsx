@@ -12,19 +12,28 @@ import CargaMasiva from './pages/empleados/CargaMasiva'
 import ActualizacionMasiva from './pages/empleados/ActualizacionMasiva'
 import PlanificacionCargos from './pages/planificacion/PlanificacionCargos'
 import CargaMasivaPlanificacion from './pages/planificacion/CargaMasivaPlanificacion'
+import DestinosPlan from './pages/planificacion/DestinosPlan'
+import CargaMasivaDestinosPlan from './pages/planificacion/CargaMasivaDestinosPlan'
+import Turnos from './pages/planificacion/Turnos'
+import Novedades from './pages/planificacion/Novedades'
 import Actividades from './pages/actividades/Actividades'
 import Contratistas from './pages/contratistas/Contratistas'
+import AgregarContratista from './pages/contratistas/AgregarContratista'
 import Documentos from './pages/documentos/Documentos'
+import AgregarDocumento from './pages/documentos/AgregarDocumento'
 import CentrosCostos from './pages/centrosCostos/CentrosCostos'
+import AgregarCentroCosto from './pages/centrosCostos/AgregarCentroCosto'
 import Visitantes from './pages/visitantes/Visitantes'
+import AgregarVisitante from './pages/visitantes/AgregarVisitante'
 import Destinos from './pages/destinos/Destinos'
+import AgregarDestino from './pages/destinos/AgregarDestino'
 import Reportes from './pages/reportes/Reportes'
 // SGSST
 import DetallesEmpresa from './pages/sgsst/DetallesEmpresa'
 import DiagnosticoInicial from './pages/sgsst/DiagnosticoInicial'
 import PeriodosTrabajo from './pages/sgsst/PeriodosTrabajo'
 import MatrizLegal from './pages/sgsst/MatrizLegal'
-import PlaneadorActividades from './pages/sgsst/PlaneadorActividades'
+import PlaneadorActividades from './pages/planeador/PlaneadorActividades'
 import GestionRiesgos from './pages/sgsst/GestionRiesgos'
 import GestionDocumental from './pages/sgsst/GestionDocumental'
 import FichasIndicadores from './pages/sgsst/FichasIndicadores'
@@ -45,6 +54,7 @@ import EvaluacionSimulacros from './pages/sgsst/EvaluacionSimulacros'
 import SeguridadVial from './pages/sgsst/SeguridadVial'
 import GestionQuimicos from './pages/sgsst/GestionQuimicos'
 import ControlesAcceso from './pages/sgsst/ControlesAcceso'
+import Inicio from './pages/inicio/Inicio'
 // Admin
 import GestionUsuarios from './pages/admin/GestionUsuarios'
 import MetricasPlataforma from './pages/admin/MetricasPlataforma'
@@ -97,7 +107,7 @@ export default function App() {
             </PrivateRoute>
           }
         >
-          <Route index element={<Navigate to="/sedes" replace />} />
+          <Route index element={<Inicio />} />
 
           {/* Sedes */}
           <Route path="sedes" element={<ListaSedes />} />
@@ -114,14 +124,23 @@ export default function App() {
           {/* Planificación */}
           <Route path="planificacion/cargos" element={<PlanificacionCargos />} />
           <Route path="planificacion/carga-masiva" element={<CargaMasivaPlanificacion />} />
+          <Route path="planificacion/destinos" element={<DestinosPlan />} />
+          <Route path="planificacion/destinos/carga-masiva" element={<CargaMasivaDestinosPlan />} />
+          <Route path="planificacion/turnos" element={<Turnos />} />
+          <Route path="planificacion/novedades" element={<Novedades />} />
 
           {/* Módulos */}
           <Route path="actividades" element={<Actividades />} />
           <Route path="contratistas" element={<Contratistas />} />
+          <Route path="contratistas/agregar" element={<AgregarContratista />} />
           <Route path="documentos" element={<Documentos />} />
+          <Route path="documentos/agregar" element={<AgregarDocumento />} />
           <Route path="centros-costos" element={<CentrosCostos />} />
+          <Route path="centros-costos/agregar" element={<AgregarCentroCosto />} />
           <Route path="visitantes" element={<Visitantes />} />
+          <Route path="visitantes/agregar" element={<AgregarVisitante />} />
           <Route path="destinos" element={<Destinos />} />
+          <Route path="destinos/agregar" element={<AgregarDestino />} />
           <Route path="reportes" element={<Reportes />} />
 
           {/* Admin (solo ADMIN_TOTAL) */}
@@ -133,7 +152,7 @@ export default function App() {
           <Route path="sgsst/diagnostico" element={<DiagnosticoInicial />} />
           <Route path="sgsst/periodos" element={<PeriodosTrabajo />} />
           <Route path="sgsst/matriz-legal" element={<MatrizLegal />} />
-          <Route path="sgsst/planeador" element={<PlaneadorActividades />} />
+          <Route path="sgsst/planeador-actividades" element={<PlaneadorActividades />} />
           <Route path="sgsst/riesgos" element={<GestionRiesgos />} />
           <Route path="sgsst/documentos" element={<GestionDocumental />} />
           <Route path="sgsst/indicadores" element={<FichasIndicadores />} />

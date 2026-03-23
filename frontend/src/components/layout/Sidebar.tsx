@@ -22,69 +22,115 @@ export default function Sidebar() {
 
   /* ── GESTION NAV ─────────────────────────────────────────── */
   interface SubItem { label: string; path: string }
-  interface NavItem { id: string; label: string; icon: React.ReactNode; children: SubItem[] }
+  interface SubGroup { label: string; items: SubItem[] }
+  interface NavItem {
+    id: string
+    label: string
+    icon: React.ReactNode
+    children?: SubItem[]
+    subGroups?: SubGroup[]
+  }
 
   const gestionItems: NavItem[] = [
     {
-      id: 'planificacion', label: t('navigation.planning'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>,
-      children: [
-        { label: t('modules.planning.positions'), path: '/planificacion/cargos' },
-        { label: t('modules.planning.bulkUpload'), path: '/planificacion/carga-masiva' },
-      ],
-    },
-    {
-      id: 'empleados', label: t('navigation.employees'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-      children: [
-        { label: t('modules.employees.list'), path: '/empleados' },
-        { label: t('modules.employees.add'), path: '/empleados/agregar' },
-        { label: t('modules.employees.bulkUpload'), path: '/empleados/carga-masiva' },
-        { label: t('modules.employees.bulkUpdate'), path: '/empleados/actualizacion-masiva' },
-      ],
-    },
-    {
-      id: 'actividades', label: t('navigation.activities'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
-      children: [{ label: t('navigation.activities'), path: '/actividades' }],
-    },
-    {
-      id: 'contratistas', label: t('navigation.contractors'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-      children: [{ label: t('navigation.contractors'), path: '/contratistas' }],
-    },
-    {
-      id: 'documentos', label: t('navigation.documents'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>,
-      children: [{ label: t('navigation.documents'), path: '/documentos' }],
-    },
-    {
-      id: 'centros-costos', label: t('navigation.costCenters'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-      children: [{ label: t('navigation.costCenters'), path: '/centros-costos' }],
-    },
-    {
-      id: 'visitantes', label: t('navigation.visitors'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
-      children: [{ label: t('navigation.visitors'), path: '/visitantes' }],
-    },
-    {
-      id: 'destinos', label: t('navigation.destinations'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-      children: [{ label: t('navigation.destinations'), path: '/destinos' }],
-    },
-    {
-      id: 'reportes', label: t('navigation.reports'),
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
-      children: [{ label: t('navigation.reports'), path: '/reportes' }],
-    },
-    {
-      id: 'sedes', label: t('navigation.headquarters'),
+      id: 'sedes', label: 'Gestionar Sedes',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>,
       children: [
-        { label: t('modules.headquarters.list'), path: '/sedes' },
-        { label: t('modules.headquarters.add'), path: '/sedes/agregar' },
+        { label: 'Listar Sedes', path: '/sedes' },
+        { label: 'Agregar Sede', path: '/sedes/agregar' },
       ],
+    },
+    {
+      id: 'planificacion', label: 'Planificación',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>,
+      subGroups: [
+        {
+          label: 'Cargos',
+          items: [
+            { label: 'Todos', path: '/planificacion/cargos' },
+            { label: 'Carga Masiva', path: '/planificacion/carga-masiva' },
+          ],
+        },
+        {
+          label: 'Destinos',
+          items: [
+            { label: 'Todos', path: '/planificacion/destinos' },
+            { label: 'Carga Masiva', path: '/planificacion/destinos/carga-masiva' },
+          ],
+        },
+        {
+          label: 'Turnos',
+          items: [
+            { label: 'Turnos', path: '/planificacion/turnos' },
+          ],
+        },
+        {
+          label: 'Novedades',
+          items: [
+            { label: 'Novedades', path: '/planificacion/novedades' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'empleados', label: 'Empleados',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+      children: [
+        { label: 'Listar Empleados', path: '/empleados' },
+        { label: 'Agregar Empleado', path: '/empleados/agregar' },
+        { label: 'Carga Masiva', path: '/empleados/carga-masiva' },
+        { label: 'Actualización Masiva', path: '/empleados/actualizacion-masiva' },
+      ],
+    },
+    {
+      id: 'actividades', label: 'Actividades',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+      children: [{ label: 'Listar Actividades', path: '/actividades' }],
+    },
+    {
+      id: 'contratistas', label: 'Contratistas',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      children: [
+        { label: 'Listar', path: '/contratistas' },
+        { label: 'Agregar', path: '/contratistas/agregar' },
+      ],
+    },
+    {
+      id: 'documentos', label: 'Documentos',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>,
+      children: [
+        { label: 'Listar Documentos', path: '/documentos' },
+        { label: 'Agregar Documento', path: '/documentos/agregar' },
+      ],
+    },
+    {
+      id: 'centros-costos', label: 'Centros de costos',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      children: [
+        { label: 'Listar Centros de costos', path: '/centros-costos' },
+        { label: 'Agregar Centro de costos', path: '/centros-costos/agregar' },
+      ],
+    },
+    {
+      id: 'visitantes', label: 'Gestionar visitantes',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+      children: [
+        { label: 'Agregar Visitante', path: '/visitantes/agregar' },
+        { label: 'Listar Visitantes', path: '/visitantes' },
+      ],
+    },
+    {
+      id: 'destinos', label: 'Gestionar destinos',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+      children: [
+        { label: 'Listar Destinos', path: '/destinos' },
+        { label: 'Agregar Destino', path: '/destinos/agregar' },
+      ],
+    },
+    {
+      id: 'reportes', label: 'Reportes',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+      children: [{ label: 'Reportes', path: '/reportes' }],
     },
   ]
 
@@ -105,7 +151,7 @@ export default function Sidebar() {
       items: [
         { id: 'periodos', label: t('sgsst.periods.title'), path: '/sgsst/periodos', icon: <FaCalendarAlt /> },
         { id: 'matriz-legal', label: t('sgsst.legalMatrix.title'), path: '/sgsst/matriz-legal', icon: <FaListOl /> },
-        { id: 'planeador', label: t('sgsst.activityPlanner.title'), path: '/sgsst/planeador', icon: <FaCalendar /> },
+        { id: 'planeador', label: t('sgsst.activityPlanner.title'), path: '/sgsst/planeador-actividades', icon: <FaCalendar /> },
       ],
     },
     {
@@ -170,10 +216,16 @@ export default function Sidebar() {
     },
   ]
 
+  const allChildPaths = (item: NavItem): SubItem[] => {
+    if (item.children) return item.children
+    if (item.subGroups) return item.subGroups.flatMap((g) => g.items)
+    return []
+  }
+
   const getInitialOpen = () => {
     const open: Record<string, boolean> = {}
     gestionItems.forEach((item) => {
-      if (item.children.some((c) => location.pathname === c.path || location.pathname.startsWith(c.path + '/'))) {
+      if (allChildPaths(item).some((c) => location.pathname === c.path || location.pathname.startsWith(c.path + '/'))) {
         open[item.id] = true
       }
     })
@@ -189,7 +241,7 @@ export default function Sidebar() {
 
   const switchModule = (mod: 'gestion' | 'sgsst') => {
     setModule(mod)
-    navigate(mod === 'gestion' ? '/sedes' : '/sgsst/empresa')
+    navigate(mod === 'gestion' ? '/' : '/sgsst/empresa')
   }
 
   return (
@@ -238,10 +290,40 @@ export default function Sidebar() {
         {/* GESTIÓN */}
         {activeModule === 'gestion' && (
           <div className="space-y-0.5">
+            <NavLink
+              to="/"
+              end
+              className={({ isActive }) =>
+                `w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive ? 'bg-primary-800 text-white' : 'text-white/80 hover:bg-primary-600 hover:text-white'
+                }`
+              }
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span className="flex-1 text-left truncate text-xs">{t('navigation.home')}</span>
+            </NavLink>
             {gestionItems.map((item) => {
               const isOpen = openMenus[item.id]
-              const hasActive = item.children.some(
+              const hasActive = allChildPaths(item).some(
                 (c) => location.pathname === c.path || location.pathname.startsWith(c.path + '/')
+              )
+              const renderLink = (child: SubItem) => (
+                <NavLink
+                  key={child.path}
+                  to={child.path}
+                  end={child.path === '/empleados' || child.path === '/sedes' || child.path === '/visitantes' || child.path === '/destinos' || child.path === '/contratistas'}
+                  className={({ isActive }) =>
+                    `block px-3 py-2 rounded-lg text-xs transition-colors ${
+                      isActive
+                        ? 'bg-primary-900 text-white font-medium'
+                        : 'text-white/70 hover:bg-primary-600 hover:text-white'
+                    }`
+                  }
+                >
+                  {child.label}
+                </NavLink>
               )
               return (
                 <div key={item.id}>
@@ -262,22 +344,17 @@ export default function Sidebar() {
                   </button>
                   {isOpen && (
                     <div className="mt-0.5 ml-4 space-y-0.5">
-                      {item.children.map((child) => (
-                        <NavLink
-                          key={child.path}
-                          to={child.path}
-                          end={child.path === '/empleados' || child.path === '/sedes'}
-                          className={({ isActive }) =>
-                            `block px-3 py-2 rounded-lg text-xs transition-colors ${
-                              isActive
-                                ? 'bg-primary-900 text-white font-medium'
-                                : 'text-white/70 hover:bg-primary-600 hover:text-white'
-                            }`
-                          }
-                        >
-                          {child.label}
-                        </NavLink>
-                      ))}
+                      {item.children
+                        ? item.children.map(renderLink)
+                        : item.subGroups?.map((group) => (
+                            <div key={group.label}>
+                              <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/40">
+                                {group.label}
+                              </p>
+                              {group.items.map(renderLink)}
+                            </div>
+                          ))
+                      }
                     </div>
                   )}
                 </div>

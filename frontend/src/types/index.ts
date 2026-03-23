@@ -193,6 +193,171 @@ export interface Actividad {
 }
 
 // ==========================================
+// TIPOS DEL PLANEADOR DE ACTIVIDADES SG-SST
+// ==========================================
+
+export type PrioridadActividad = 'BAJA' | 'MEDIA' | 'ALTA' | 'URGENTE';
+export type EstadoActividad = 'PLANEADO' | 'EN_PROCESO' | 'REPROGRAMADO' | 'FINALIZADA' | 'CANCELADA';
+export type ModalidadActividad = 'PRESENCIAL' | 'VIRTUAL' | 'COMBINADA';
+export type FasePHVA = 'PLANEAR' | 'HACER' | 'VERIFICAR' | 'ACTUAR';
+
+export type TipoEventoSGSST = 
+  | 'CAPACITACION' 
+  | 'INSPECCIONES' 
+  | 'SIMULACROS' 
+  | 'REUNIONES' 
+  | 'ACCIDENTES' 
+  | 'EPP' 
+  | 'EXAMENES_MEDICOS' 
+  | 'INDUCCION'
+  | 'INVESTIGACION'
+  | 'MEJORA'
+  | 'AUDITORIA'
+  | 'OTRO';
+
+export type ProgramaSGSST = 
+  | 'SG-SST'
+  | 'RIESGO_QUIMICO'
+  | 'TRABAJO_ALTURAS'
+  | 'ESPACIOS_CONFINADOS'
+  | 'EQUIPO_PESADO'
+  | 'SEGURIDAD_VIAL'
+  | 'EMERGENCIAS'
+  | 'MEDICINA_LABORAL'
+  | 'AUDITORIA'
+  | 'GESTION_RIESGO'
+  | 'OTRO';
+
+export type TematicaSGSST = 
+  | 'SEGURIDAD_VIAL'
+  | 'RIESGO_BIOLOGICO'
+  | 'ERGONOMIA'
+  | 'RIESGO_ELECTRICO'
+  | 'FISICO_QUIMICO'
+  | 'PSICOSOCIAL'
+  | 'MECANICO'
+  | 'LOCATIVO'
+  | 'PUBLICO'
+  | 'SST_GENERAL'
+  | 'EMERGENCIA'
+  | 'PRIMEROS_AUXILIOS'
+  | 'BRIGADISTA'
+  | 'EVACUACION'
+  | 'OTRO';
+
+export interface ParticipanteActividad {
+  id: string;
+  empleadoId?: string;
+  empleado?: Empleado;
+  contratistaId?: string;
+  contratista?: Contratista;
+  externoNombre?: string;
+  externoEmail?: string;
+  externoTelefono?: string;
+  externoEmpresa?: string;
+  asistio: boolean;
+  observaciones?: string;
+}
+
+export interface ActividadPlaneada {
+  id: string;
+  codigo: string;
+  nombre: string;
+  descripcion?: string;
+  tipoEvento: TipoEventoSGSST;
+  programa: ProgramaSGSST;
+  tematica: TematicaSGSST;
+  prioridad: PrioridadActividad;
+  estado: EstadoActividad;
+  modalidad: ModalidadActividad;
+  fasePHVA: FasePHVA;
+  
+  fechaInicio: string;
+  fechaFin: string;
+  horaInicio?: string;
+  horaFin?: string;
+  
+  responsableId: string;
+  responsable?: User;
+  contratistaId?: string;
+  contratista?: Contratista;
+  empleadoResponsableId?: string;
+  empleadoResponsable?: Empleado;
+  
+  sedeId?: string;
+  sede?: Sede;
+  categoria1?: string;
+  categoria2?: string;
+  categoria3?: string;
+  
+  presupuestoAsignado?: number;
+  presupuestoEjecutado?: number;
+  recursos?: string;
+  
+  participantes: ParticipanteActividad[];
+  cantidadParticipantes: number;
+  coberturaEsperada?: number;
+  
+  observaciones?: string;
+  resultados?: string;
+  evidencias?: string[];
+  
+  empresaId: string;
+  creadoPorId: string;
+  creadoPor?: User;
+  
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FiltrosActividades {
+  fechaInicioDesde?: string;
+  fechaInicioHasta?: string;
+  fechaFinDesde?: string;
+  fechaFinHasta?: string;
+  tipoEvento?: TipoEventoSGSST;
+  programa?: ProgramaSGSST;
+  tematica?: TematicaSGSST;
+  prioridad?: PrioridadActividad;
+  estado?: EstadoActividad;
+  modalidad?: ModalidadActividad;
+  responsableId?: string;
+  contratistaId?: string;
+  empleadoContratistaId?: string;
+  categoria1?: string;
+  categoria2?: string;
+  categoria3?: string;
+  sedeId?: string;
+  empresaId?: string;
+  busqueda?: string;
+}
+
+export interface DashboardActividades {
+  totalActividades: number;
+  actividadesMesActual: number;
+  actividadesSinSede: number;
+  indicadorCumplimiento: number;
+  porPrioridad: Record<PrioridadActividad, number>;
+  porPHVA: Record<FasePHVA, number>;
+  porEstado: Record<EstadoActividad, number>;
+  actividadesVencidas: number;
+  presupuestoAsignado: number;
+  presupuestoEjecutado: number;
+}
+
+export interface ReporteActividadesParams {
+  tipoReporte: 'ACTIVIDADES' | 'VENCIDAS' | 'PHVA' | 'RECURSOS' | 'PRESUPUESTO' | 'COBERTURA';
+  agrupacion?: 'SEDE' | 'MES' | 'PROGRAMA' | 'TIPO_EVENTO' | 'AREA' | 'RESPONSABLE';
+  criterio?: 'ESTADO' | 'PRIORIDAD' | 'CUMPLIMIENTO' | 'COBERTURA';
+  tipoGrafico?: 'BARRAS' | 'PASTEL' | 'LINEA' | 'TABLA';
+  fechaDesde?: string;
+  fechaHasta?: string;
+  periodo?: 'ANIO' | 'SEMESTRE' | 'TRIMESTRE' | 'MES' | 'SEMANA';
+  sedeId?: string;
+  programa?: ProgramaSGSST;
+}
+
+// ==========================================
 // TIPOS DE DESTINOS
 // ==========================================
 
@@ -365,4 +530,194 @@ export interface DashboardStats {
   ingresosDiarios: number;
   empleadosPorContratista: { nombre: string; cantidad: number }[];
   planificacionesPorMes: { mes: string; cantidad: number }[];
+}
+
+// ==========================================
+// TIPOS DE SEGURIDAD VIAL
+// ==========================================
+
+export type TipoVehiculo = 'CARRO' | 'MOTO' | 'CAMION' | 'CAMIONETA' | 'BUS' | 'VAN' | 'OTRO';
+export type EstadoVehiculo = 'ACTIVO' | 'MANTENIMIENTO' | 'INACTIVO' | 'BAJA';
+export type TipoCombustible = 'GASOLINA' | 'DIESEL' | 'GAS' | 'ELECTRICO' | 'HIBRIDO';
+export type EstadoLicencia = 'VIGENTE' | 'VENCIDA' | 'SUSPENDIDA' | 'CANCELADA';
+export type TipoComparendo = 'LEVE' | 'GRAVE' | 'GRAVISIMO';
+export type EstadoComparendo = 'PENDIENTE' | 'PAGADO' | 'APLAZADO' | 'EN_RECURSO';
+export type CategoriaLicencia = 'A1' | 'A2' | 'B1' | 'B2' | 'B3' | 'C1' | 'C2' | 'C3';
+
+export interface Vehiculo {
+  id: string;
+  placa: string;
+  tipo: TipoVehiculo;
+  marca: string;
+  modelo: string;
+  ano: number;
+  color: string;
+  numeroMotor?: string;
+  numeroChasis?: string;
+  vin?: string;
+  tipoCombustible: TipoCombustible;
+  capacidadPasajeros?: number;
+  capacidadCarga?: number;
+  fechaVencimientoSOAT?: string;
+  fechaVencimientoTecnomecanica?: string;
+  fechaVencimientoTarjetaOperacion?: string;
+  empresaAseguradora?: string;
+  estado: EstadoVehiculo;
+  sedeId?: string;
+  sede?: Sede;
+  kilometrajeActual: number;
+  fechaUltimoMantenimiento?: string;
+  proximoMantenimiento?: string;
+  observaciones?: string;
+  foto?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Conductor {
+  id: string;
+  empleadoId?: string;
+  empleado?: Empleado;
+  externoNombre?: string;
+  externoIdentificacion?: string;
+  externoTelefono?: string;
+  externoEmail?: string;
+  numeroLicencia: string;
+  categoriaLicencia: CategoriaLicencia;
+  fechaExpedicionLicencia: string;
+  fechaVencimientoLicencia: string;
+  organismoTransito: string;
+  estadoLicencia: EstadoLicencia;
+  esExterno: boolean;
+  observaciones?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Comparendo {
+  id: string;
+  numeroComparendo: string;
+  fechaInfraccion: string;
+  horaInfraccion?: string;
+  lugarInfraccion: string;
+  tipoComparendo: TipoComparendo;
+  codigoInfraccion?: string;
+  descripcionInfraccion: string;
+  valorMulta: number;
+  estado: EstadoComparendo;
+  fechaNotificacion?: string;
+  fechaPago?: string;
+  valorPago?: number;
+  vehiculoId?: string;
+  vehiculo?: Vehiculo;
+  conductorId?: string;
+  conductor?: Conductor;
+  empleadoReportaId?: string;
+  empleadoReporta?: Empleado;
+  sedeId?: string;
+  sede?: Sede;
+  evidencias?: string[];
+  observaciones?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface InspeccionPreoperacional {
+  id: string;
+  fecha: string;
+  hora: string;
+  vehiculoId: string;
+  vehiculo?: Vehiculo;
+  conductorId: string;
+  conductor?: Conductor;
+  kilometrajeInicial: number;
+  kilometrajeFinal?: number;
+  // Sistema de luces
+  lucesAltas: boolean;
+  lucesBajas: boolean;
+  direccionales: boolean;
+  lucesFreno: boolean;
+  lucesRetroceso: boolean;
+  // Niveles
+  nivelAceite: boolean;
+  nivelFrenos: boolean;
+  nivelRefrigerante: boolean;
+  nivelDireccion: boolean;
+  // Llantas
+  llantaDelanteraIzquierda: boolean;
+  llantaDelanteraDerecha: boolean;
+  llantaTraseraIzquierda: boolean;
+  llantaTraseraDerecha: boolean;
+  llantaRepuesto: boolean;
+  // Otros sistemas
+  frenos: boolean;
+  direccion: boolean;
+  claxon: boolean;
+  cinturonesSeguridad: boolean;
+  espejosRetrovisores: boolean;
+  limpiaparabrisas: boolean;
+  vidrios: boolean;
+  puertas: boolean;
+  // Documentos
+  tarjetaPropiedad: boolean;
+  soat: boolean;
+  revisionTecnomecanica: boolean;
+  seguroContractual: boolean;
+  seguroExtracontractual: boolean;
+  // Observaciones
+  observaciones?: string;
+  novedades?: string;
+  estado: 'APROBADA' | 'RECHAZADA' | 'CON_NOVEDADES';
+  firmaConductor?: string;
+  firmaVerificador?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EncuestaSeguridadVial {
+  id: string;
+  titulo: string;
+  descripcion?: string;
+  fechaInicio: string;
+  fechaFin?: string;
+  activa: boolean;
+  preguntas: PreguntaEncuestaVial[];
+  respuestas?: RespuestaEncuestaVial[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PreguntaEncuestaVial {
+  id: string;
+  encuestaId: string;
+  orden: number;
+  texto: string;
+  tipo: 'SELECCION_UNICA' | 'SELECCION_MULTIPLE' | 'ABIERTA' | 'ESCALA';
+  opciones?: string[];
+  requerida: boolean;
+}
+
+export interface RespuestaEncuestaVial {
+  id: string;
+  encuestaId: string;
+  empleadoId?: string;
+  empleado?: Empleado;
+  fechaRespuesta: string;
+  respuestas: { preguntaId: string; respuesta: string | string[] }[];
+}
+
+export interface DashboardSeguridadVial {
+  totalVehiculos: number;
+  vehiculosActivos: number;
+  vehiculosEnMantenimiento: number;
+  vehiculosSOATVencido: number;
+  vehiculosTecnoVencido: number;
+  totalConductores: number;
+  conductoresLicenciaVencida: number;
+  totalComparendos: number;
+  comparendosPendientes: number;
+  comparendosMes: number;
+  inspeccionesHoy: number;
+  inspeccionesAprobadas: number;
+  inspeccionesConNovedades: number;
 }
