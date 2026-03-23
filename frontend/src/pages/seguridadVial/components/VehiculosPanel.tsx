@@ -3,13 +3,10 @@ import {
   PlusIcon, 
   PencilIcon, 
   TrashIcon, 
-  SearchIcon,
+  MagnifyingGlassIcon,
   ArrowDownTrayIcon,
-  TruckIcon,
   CheckCircleIcon,
-  XCircleIcon,
-  CalendarIcon,
-  WrenchIcon
+  XCircleIcon
 } from '@heroicons/react/24/outline';
 import { catalogosVial } from '../../../api/seguridadVial.api';
 import type { Vehiculo } from '../../../types';
@@ -56,7 +53,7 @@ export default function VehiculosPanel({
     onChangeSubVista('editar');
   };
 
-  const handleEliminar = (id: string) => {
+  const handleEliminar = (_id: string) => {
     if (confirm('¿Eliminar este vehículo?')) {
       toast.success('Vehículo eliminado');
       onRefresh();
@@ -273,7 +270,7 @@ export default function VehiculosPanel({
         </div>
         
         <div className="text-center py-12 text-gray-500">
-          <SearchIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+          <MagnifyingGlassIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
           <p>Formulario de inspección preoperacional</p>
           <p className="text-sm">Seleccione un vehículo para realizar la inspección</p>
         </div>
@@ -288,7 +285,7 @@ export default function VehiculosPanel({
       <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <SearchIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Buscar vehículo..."
@@ -305,7 +302,7 @@ export default function VehiculosPanel({
             className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 
                      rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
           >
-            <SearchIcon className="w-4 h-4" />
+            <MagnifyingGlassIcon className="w-4 h-4" />
             Inspeccionar
           </button>
           <button className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 

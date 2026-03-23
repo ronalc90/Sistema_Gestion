@@ -7,7 +7,9 @@ interface Props {
   loading?: boolean;
 }
 
-export default function BusquedaPlaca({ vehiculos, loading }: Props) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+export default function BusquedaPlaca({ vehiculos, loading: _loading }: Props) {
   const [placa, setPlaca] = useState('');
   const [vehiculoEncontrado, setVehiculoEncontrado] = useState<Vehiculo | null>(null);
   const [buscando, setBuscando] = useState(false);

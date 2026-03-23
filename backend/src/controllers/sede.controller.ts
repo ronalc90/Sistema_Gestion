@@ -89,6 +89,12 @@ export const getSedeById = async (req: Request, res: Response, next: NextFunctio
       include: {
         centroCosto: true,
         horarios: { orderBy: { dia: 'asc' } },
+        planificacionesCargos: {
+          include: {
+            contratista: { select: { id: true, nombre: true, nit: true, estado: true } },
+          },
+          orderBy: { createdAt: 'asc' },
+        },
         _count: { select: { empleados: true, destinos: true } },
       },
     });

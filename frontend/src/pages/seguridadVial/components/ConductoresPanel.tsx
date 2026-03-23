@@ -3,10 +3,8 @@ import {
   PlusIcon, 
   PencilIcon, 
   TrashIcon, 
-  SearchIcon,
+  MagnifyingGlassIcon,
   UserIcon,
-  CheckCircleIcon,
-  XCircleIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline';
 import { seguridadVialApi, catalogosVial } from '../../../api/seguridadVial.api';
@@ -76,7 +74,7 @@ export default function ConductoresPanel() {
       <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <SearchIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Buscar conductor..."

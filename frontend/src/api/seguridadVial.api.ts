@@ -201,7 +201,7 @@ export const seguridadVialApi = {
   },
 
   // Vehículos
-  listVehiculos: async (params?: { search?: string; estado?: string; sedeId?: string }): Promise<{ data: Vehiculo[] }> => {
+  listVehiculos: async (_params?: { search?: string; estado?: string; sedeId?: string }): Promise<{ data: Vehiculo[] }> => {
     // Simulación
     return new Promise((resolve) => {
       setTimeout(() => {

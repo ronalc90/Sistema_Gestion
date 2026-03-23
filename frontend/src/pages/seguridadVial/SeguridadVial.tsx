@@ -5,17 +5,15 @@ import {
   UserIcon,
   DocumentTextIcon,
   ClipboardDocumentCheckIcon,
-  HomeIcon,
-  MagnifyingGlassIcon,
   ChevronDownIcon,
   PlusIcon,
   ListBulletIcon,
-  SearchIcon,
+  MagnifyingGlassIcon,
   TableCellsIcon,
   ComputerDesktopIcon
 } from '@heroicons/react/24/outline';
 import PageHeader from '../../components/common/PageHeader';
-import DashboardVial from './components/DashboardVial';
+// import DashboardVial from './components/DashboardVial';
 import VehiculosPanel from './components/VehiculosPanel';
 import ConductoresPanel from './components/ConductoresPanel';
 import ComparendosPanel from './components/ComparendosPanel';
@@ -89,7 +87,7 @@ export default function SeguridadVial() {
     setDropdownAbierto(null);
   };
 
-  const handleConductoresAction = (action: string) => {
+  const handleConductoresAction = (_action: string) => {
     setVistaActual('conductores');
     setSubVista('lista');
     setDropdownAbierto(null);
@@ -109,7 +107,7 @@ export default function SeguridadVial() {
     setDropdownAbierto(null);
   };
 
-  const handleEncuestaAction = (action: string) => {
+  const handleEncuestaAction = (_action: string) => {
     setVistaActual('encuesta');
     setSubVista('lista');
     setDropdownAbierto(null);
@@ -124,7 +122,7 @@ export default function SeguridadVial() {
       dropdown: [
         { id: 'nuevo', label: 'Agregar vehículo', icon: PlusIcon, action: () => handleVehiculosAction('nuevo') },
         { id: 'lista', label: 'Vehículos registrados', icon: ListBulletIcon, action: () => handleVehiculosAction('lista') },
-        { id: 'inspeccion', label: 'Generar inspección', icon: SearchIcon, action: () => handleVehiculosAction('inspeccion') },
+        { id: 'inspeccion', label: 'Generar inspección', icon: MagnifyingGlassIcon, action: () => handleVehiculosAction('inspeccion') },
         { id: 'maestro', label: 'Maestro inspecciones preoperacionales', icon: TableCellsIcon, action: () => handleVehiculosAction('maestro') },
       ]
     },
@@ -272,7 +270,10 @@ export default function SeguridadVial() {
       )}
 
       {vistaActual === 'comparendos' && (
-        <ComparendosPanel subVista={subVista} onChangeSubVista={setSubVista} />
+        <ComparendosPanel 
+          subVista={subVista === 'inspeccion' ? 'lista' : subVista} 
+          onChangeSubVista={setSubVista} 
+        />
       )}
 
       {vistaActual === 'encuesta' && (

@@ -8,6 +8,13 @@ import StatusBadge from '../../components/common/StatusBadge'
 import { sedesApi } from '../../api/sedes.api'
 import toast from 'react-hot-toast'
 
+interface PlanificacionCargo {
+  id: string
+  fechaInicio: string
+  fechaFin: string
+  contratista: { id: string; nombre: string; nit?: string; estado: string }
+}
+
 interface Sede {
   id: string
   nombre: string
@@ -16,9 +23,38 @@ interface Sede {
   fechaInicial?: string
   fechaFinal?: string
   nombreColeccion?: string
+  createdAt?: string
   centroCosto?: { id: string; nombre: string; codigo: string }
   horarios?: Array<{ dia: string; activo: boolean; horaInicio?: string; horaFin?: string }>
+  planificacionesCargos?: PlanificacionCargo[]
   _count?: { empleados: number }
+}
+
+const DIAS_ORDER = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO']
+const DIAS_LABELS: Record<string, string> = {
+  LUNES: 'Lunes',
+  MARTES: 'Martes',
+  MIERCOLES: 'Miércoles',
+  JUEVES: 'Jueves',
+  VIERNES: 'Viernes',
+  SABADO: 'Sábado',
+  DOMINGO: 'Domingo',
+}
+
+const TABS = ['Detalle de la sede', 'Contratistas asociados', 'Departamentos asociados', 'Áreas asociadas']
+
+function formatDate(dateStr?: string | null): string {
+  if (!dateStr) return '—'
+  const d = new Date(dateStr)
+  const dd = String(d.getUTCDate()).padStart(2, '0')
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const yyyy = d.getUTCFullYear()
+  return `${dd}-${mm}-${yyyy}`
+}
+
+function formatDateTime(dateStr?: string | null): string {
+  if (!dateStr) return '—'
+  return dateStr.replace('T', ' ').slice(0, 19)
 }
 
 export default function ListaSedes() {
@@ -29,6 +65,8 @@ export default function ListaSedes() {
   const [selected, setSelected] = useState<Sede | null>(null)
   const [modal, setModal] = useState<'view' | 'delete' | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState(0)
 
   const fetchSedes = useCallback(async () => {
     try {
@@ -47,17 +85,29 @@ export default function ListaSedes() {
     }
   }, [])
 
-  useEffect(() => { 
-    fetchSedes() 
+  useEffect(() => {
+    fetchSedes()
   }, [fetchSedes])
 
   const filtered = sedes.filter((s) =>
     s.nombre.toLowerCase().includes(search.toLowerCase())
   )
 
-  const handleView = (sede: Sede) => {
+  const handleView = async (sede: Sede) => {
     setSelected(sede)
+    setActiveTab(0)
     setModal('view')
+    setDetailLoading(true)
+    try {
+      const res = await sedesApi.getById(sede.id)
+      if (res.data?.success) {
+        setSelected(res.data.data)
+      }
+    } catch (error) {
+      console.error('Error fetching sede detail:', error)
+    } finally {
+      setDetailLoading(false)
+    }
   }
 
   const handleEdit = (sede: Sede) => {
@@ -71,7 +121,6 @@ export default function ListaSedes() {
 
   const handleDelete = async () => {
     if (!selected) return
-    
     setDeleting(true)
     try {
       const res = await sedesApi.remove(selected.id)
@@ -85,8 +134,7 @@ export default function ListaSedes() {
       }
     } catch (error: any) {
       console.error('Error deleting sede:', error)
-      const message = error?.response?.data?.message || 'Error al eliminar la sede'
-      toast.error(message)
+      toast.error(error?.response?.data?.message || 'Error al eliminar la sede')
     } finally {
       setDeleting(false)
     }
@@ -95,10 +143,7 @@ export default function ListaSedes() {
   const handleCloseModal = () => {
     setModal(null)
     setSelected(null)
-  }
-
-  const handleAddSede = () => {
-    navigate('/sedes/agregar')
+    setActiveTab(0)
   }
 
   return (
@@ -120,10 +165,10 @@ export default function ListaSedes() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button 
+        <button
           type="button"
-          className="btn-primary whitespace-nowrap" 
-          onClick={handleAddSede}
+          className="btn-primary whitespace-nowrap"
+          onClick={() => navigate('/sedes/agregar')}
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -185,44 +230,54 @@ export default function ListaSedes() {
       </div>
 
       {/* View Modal */}
-      <Modal 
-        isOpen={modal === 'view'} 
-        onClose={handleCloseModal} 
-        title="Detalle de Sede" 
-        size="lg"
+      <Modal
+        isOpen={modal === 'view'}
+        onClose={handleCloseModal}
+        title={selected?.nombre ?? 'Detalle de Sede'}
+        size="xl"
       >
         {selected && (
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <Detail label="Nombre" value={selected.nombre} />
-            <Detail label="Estado" value={selected.estado} />
-            <Detail label="Centro de costos" value={selected.centroCosto?.nombre ?? '—'} />
-            <Detail label="Nombre colección" value={selected.nombreColeccion ?? '—'} />
-            <Detail label="Tiempo descanso" value={selected.tiempoDescanso ? `${selected.tiempoDescanso} horas` : '—'} />
-            <Detail label="Fecha inicial" value={selected.fechaInicial ? selected.fechaInicial.slice(0, 10) : '—'} />
-            <Detail label="Fecha final" value={selected.fechaFinal ? selected.fechaFinal.slice(0, 10) : '—'} />
-            {selected.horarios && selected.horarios.length > 0 && (
-              <div className="col-span-2 mt-2">
-                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Horarios</p>
-                <div className="grid grid-cols-4 gap-2">
-                  {selected.horarios.map((h) => (
-                    <div key={h.dia} className="bg-gray-50 dark:bg-gray-700 rounded p-2">
-                      <p className="text-xs font-medium capitalize text-gray-700 dark:text-gray-300">{h.dia.toLowerCase()}</p>
-                      {h.activo ? (
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{h.horaInicio} – {h.horaFin}</p>
-                      ) : (
-                        <p className="text-xs text-gray-400 italic">Sin horario</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
+          <div>
+            {/* Created at */}
+            <p className="text-xs text-gray-400 mb-4">
+              Creado En: {formatDateTime(selected.createdAt)}
+            </p>
+
+            {/* Tabs */}
+            <div className="border-b border-gray-200 mb-5">
+              <nav className="flex gap-0 -mb-px overflow-x-auto">
+                {TABS.map((tab, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveTab(i)}
+                    className={`px-4 py-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors ${
+                      activeTab === i
+                        ? 'border-primary-600 text-primary-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            {/* Tab content */}
+            {detailLoading ? (
+              <div className="flex items-center justify-center py-10">
+                <svg className="animate-spin h-5 w-5 text-primary-600 mr-2" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+                <span className="text-sm text-gray-500">Cargando...</span>
               </div>
-            )}
-            {selected._count && (
-              <div className="col-span-2 mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-xs text-gray-500">
-                  Empleados asignados: <span className="font-medium">{selected._count.empleados}</span>
-                </p>
-              </div>
+            ) : (
+              <>
+                {activeTab === 0 && <DetalleTab sede={selected} />}
+                {activeTab === 1 && <ContratistasTab sede={selected} />}
+                {activeTab === 2 && <DepartamentosTab />}
+                {activeTab === 3 && <AreasTab />}
+              </>
             )}
           </div>
         )}
@@ -236,8 +291,7 @@ export default function ListaSedes() {
         title="Confirmar Eliminación"
         message={`¿Está seguro que desea eliminar la sede "${selected?.nombre}"? Esta acción no se puede deshacer.`}
       />
-      
-      {/* Loading overlay for delete */}
+
       {deleting && (
         <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 flex items-center gap-3 shadow-lg">
@@ -253,11 +307,182 @@ export default function ListaSedes() {
   )
 }
 
-function Detail({ label, value }: { label: string; value: string }) {
+/* ── Sub-components ─────────────────────────────────── */
+
+function DetalleTab({ sede }: { sede: Sede }) {
   return (
-    <div>
-      <p className="text-xs font-medium text-gray-400 uppercase">{label}</p>
-      <p className="text-sm text-gray-800 dark:text-gray-200 mt-0.5">{value || '—'}</p>
+    <div className="space-y-6">
+      {/* Fields grid */}
+      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <DetailField label="Nombre" value={sede.nombre} />
+        <DetailField label="Fecha inicial" value={formatDate(sede.fechaInicial)} />
+        <DetailField label="Fecha final" value={formatDate(sede.fechaFinal)} />
+        <DetailField label="Centro de Costos" value={sede.centroCosto?.nombre ?? '—'} />
+        <DetailField
+          label="Estado"
+          value={sede.estado === 'ACTIVO' ? 'Activo' : 'Inactivo'}
+        />
+      </div>
+
+      {/* Horarios */}
+      <div>
+        <p className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
+          Horarios.
+        </p>
+        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+          <HorarioRow
+            label="Tiempo de descanso"
+            value={sede.tiempoDescanso ? `${sede.tiempoDescanso} min` : '0 min'}
+          />
+          {DIAS_ORDER.map((dia) => {
+            const h = sede.horarios?.find((x) => x.dia === dia)
+            const value =
+              h?.activo && h.horaInicio && h.horaFin
+                ? `${h.horaInicio} - ${h.horaFin}`
+                : '-'
+            return <HorarioRow key={dia} label={DIAS_LABELS[dia]} value={value} />
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ContratistasTab({ sede }: { sede: Sede }) {
+  const cargos = sede.planificacionesCargos ?? []
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Código
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Contratista
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Fecha inicial
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Fecha final
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Estado
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {cargos.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="py-8 text-center text-sm text-gray-400">
+                No hay contratistas asociados
+              </td>
+            </tr>
+          ) : (
+            cargos.map((c) => (
+              <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                <td className="py-2 px-3 text-gray-800 font-medium">
+                  {c.contratista.nit ?? '—'}
+                </td>
+                <td className="py-2 px-3 text-gray-800">{c.contratista.nombre}</td>
+                <td className="py-2 px-3 text-gray-600">{formatDate(c.fechaInicio)}</td>
+                <td className="py-2 px-3 text-gray-600">{formatDate(c.fechaFin)}</td>
+                <td className="py-2 px-3">
+                  <StatusBadge active={c.contratista.estado === 'ACTIVO'} />
+                </td>
+                <td className="py-2 px-3">
+                  {/* acciones futuras */}
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function DepartamentosTab() {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Nombre
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Estado
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={3} className="py-8 text-center text-sm text-gray-400">
+              No hay departamentos asociados
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function AreasTab() {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-gray-200">
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Nombre
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Departamento
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Estado
+            </th>
+            <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Acciones
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={4} className="py-8 text-center text-sm text-gray-400">
+              No hay áreas asociadas
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function DetailField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-start gap-2">
+      <div className="min-w-0">
+        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">{label}</p>
+        <p className="text-sm text-gray-800 mt-0.5">{value || '—'}</p>
+      </div>
+    </div>
+  )
+}
+
+function HorarioRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between py-1 border-b border-gray-50 last:border-0">
+      <span className="text-xs text-gray-500">{label}</span>
+      <span className="text-xs text-gray-800 font-medium">{value}</span>
     </div>
   )
 }

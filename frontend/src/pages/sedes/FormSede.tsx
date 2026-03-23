@@ -272,145 +272,162 @@ export default function FormSede() {
   }
 
   return (
-    <div className="p-6 max-w-3xl">
+    <div className="p-6">
       <PageHeader
         title={isEdit ? 'Editar Sede' : 'Agregar Sede'}
         breadcrumbs={breadcrumbs}
       />
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Nombre */}
-        <div>
-          <label className="form-label">
-            Nombre de la Sede <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            className={`form-input ${errors.nombre ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
-            placeholder="Ingrese nombre para la Sede"
-            value={form.nombre}
-            onChange={(e) => set('nombre', e.target.value)}
-            disabled={submitting}
-          />
-          {errors.nombre && <p className="text-xs text-red-500 mt-1">{errors.nombre}</p>}
+
+        {/* ── Card: Datos Generales ── */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              Datos Generales
+            </h2>
+          </div>
+          <div className="p-6 grid grid-cols-3 gap-x-6 gap-y-4">
+
+            {/* Nombre — ancho completo */}
+            <div className="col-span-3">
+              <label className="form-label">
+                Nombre de la Sede <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                className={`form-input ${errors.nombre ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+                placeholder="Ingrese nombre para la Sede"
+                value={form.nombre}
+                onChange={(e) => set('nombre', e.target.value)}
+                disabled={submitting}
+              />
+              {errors.nombre && <p className="text-xs text-red-500 mt-1">{errors.nombre}</p>}
+            </div>
+
+            {/* Tiempo de descanso */}
+            <div>
+              <label className="form-label">
+                Tiempo de descanso <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="form-select"
+                value={form.tiempoDescanso}
+                onChange={(e) => set('tiempoDescanso', e.target.value)}
+                disabled={submitting}
+              >
+                <option value="">Seleccione tiempo de descanso</option>
+                {TIEMPOS_DESCANSO.map((t) => (
+                  <option key={t.value} value={t.value}>{t.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Estado */}
+            <div>
+              <label className="form-label">
+                Estado para la Sede <span className="text-red-500">*</span>
+              </label>
+              <select
+                className={`form-select ${errors.estado ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+                value={form.estado}
+                onChange={(e) => set('estado', e.target.value as 'ACTIVO' | 'INACTIVO')}
+                disabled={submitting}
+              >
+                <option value="">Selecciona estado</option>
+                <option value="ACTIVO">Activo</option>
+                <option value="INACTIVO">Inactivo</option>
+              </select>
+              {errors.estado && <p className="text-xs text-red-500 mt-1">{errors.estado}</p>}
+            </div>
+
+            {/* Centro de costos */}
+            <div>
+              <label className="form-label">Centro de costos</label>
+              <select
+                className="form-select"
+                value={form.centroCostoId}
+                onChange={(e) => set('centroCostoId', e.target.value)}
+                disabled={submitting}
+              >
+                <option value="">Sin centro de costos</option>
+                {centrosCosto.map((cc) => (
+                  <option key={cc.id} value={cc.id}>
+                    {cc.codigo} – {cc.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Fecha inicial */}
+            <div>
+              <label className="form-label">
+                Fecha inicial <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                className={`form-input ${errors.fechaInicial ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+                value={form.fechaInicial}
+                onChange={(e) => set('fechaInicial', e.target.value)}
+                disabled={submitting}
+              />
+              {errors.fechaInicial && <p className="text-xs text-red-500 mt-1">{errors.fechaInicial}</p>}
+            </div>
+
+            {/* Fecha final */}
+            <div>
+              <label className="form-label">
+                Fecha final <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                className={`form-input ${errors.fechaFinal ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+                value={form.fechaFinal}
+                min={form.fechaInicial}
+                onChange={(e) => set('fechaFinal', e.target.value)}
+                disabled={submitting}
+              />
+              {errors.fechaFinal && <p className="text-xs text-red-500 mt-1">{errors.fechaFinal}</p>}
+            </div>
+
+            {/* Nombre de colección */}
+            <div>
+              <label className="form-label">
+                Nombre de colección <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                className={`form-input ${errors.nombreColeccion ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
+                placeholder="Acorde al nombre de la sede"
+                value={form.nombreColeccion}
+                onChange={(e) => set('nombreColeccion', e.target.value)}
+                disabled={submitting}
+              />
+              <p className="text-xs text-gray-400 mt-1">Mínimo 4 caracteres.</p>
+              {errors.nombreColeccion && <p className="text-xs text-red-500 mt-1">{errors.nombreColeccion}</p>}
+            </div>
+
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          {/* Tiempo descanso */}
-          <div>
-            <label className="form-label">Tiempo de descanso</label>
-            <select
-              className="form-select"
-              value={form.tiempoDescanso}
-              onChange={(e) => set('tiempoDescanso', e.target.value)}
-              disabled={submitting}
-            >
-              <option value="">Seleccione el tiempo de descanso</option>
-              {TIEMPOS_DESCANSO.map((t) => (
-                <option key={t.value} value={t.value}>{t.label}</option>
-              ))}
-            </select>
+        {/* ── Card: Horarios ── */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              Horarios de la Sede
+            </h2>
+            {errors.horarios && (
+              <p className="text-xs text-red-500">{errors.horarios}</p>
+            )}
           </div>
-
-          {/* Estado */}
-          <div>
-            <label className="form-label">
-              Estado <span className="text-red-500">*</span>
-            </label>
-            <select
-              className={`form-select ${errors.estado ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
-              value={form.estado}
-              onChange={(e) => set('estado', e.target.value as 'ACTIVO' | 'INACTIVO')}
-              disabled={submitting}
-            >
-              <option value="">Selecciona estado para la Sede</option>
-              <option value="ACTIVO">Activo</option>
-              <option value="INACTIVO">Inactivo</option>
-            </select>
-            {errors.estado && <p className="text-xs text-red-500 mt-1">{errors.estado}</p>}
-          </div>
-
-          {/* Fecha inicial */}
-          <div>
-            <label className="form-label">
-              Fecha inicial <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              className={`form-input ${errors.fechaInicial ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
-              value={form.fechaInicial}
-              onChange={(e) => set('fechaInicial', e.target.value)}
-              disabled={submitting}
-            />
-            {errors.fechaInicial && <p className="text-xs text-red-500 mt-1">{errors.fechaInicial}</p>}
-          </div>
-
-          {/* Fecha final */}
-          <div>
-            <label className="form-label">
-              Fecha final <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              className={`form-input ${errors.fechaFinal ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
-              value={form.fechaFinal}
-              min={form.fechaInicial}
-              onChange={(e) => set('fechaFinal', e.target.value)}
-              disabled={submitting}
-            />
-            {errors.fechaFinal && <p className="text-xs text-red-500 mt-1">{errors.fechaFinal}</p>}
-          </div>
-        </div>
-
-        {/* Nombre colección */}
-        <div>
-          <label className="form-label">
-            Nombre de colección <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            className={`form-input ${errors.nombreColeccion ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
-            placeholder="Nombre de colección (ir acorde al nombre de la sede)"
-            value={form.nombreColeccion}
-            onChange={(e) => set('nombreColeccion', e.target.value)}
-            disabled={submitting}
-          />
-          <p className="text-xs text-gray-400 mt-1">El nombre debe tener al menos 4 caracteres de largo.</p>
-          {errors.nombreColeccion && <p className="text-xs text-red-500 mt-1">{errors.nombreColeccion}</p>}
-        </div>
-
-        {/* Centro de costos */}
-        <div>
-          <label className="form-label">Centro de costos</label>
-          <select
-            className="form-select"
-            value={form.centroCostoId}
-            onChange={(e) => set('centroCostoId', e.target.value)}
-            disabled={submitting}
-          >
-            <option value="">Sin centro de costos</option>
-            {centrosCosto.map((cc) => (
-              <option key={cc.id} value={cc.id}>
-                {cc.codigo} – {cc.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Horarios */}
-        <div>
-          <label className="form-label">
-            Seleccionar Horarios de la sede
-            {errors.horarios && <span className="text-red-500 ml-2">({errors.horarios})</span>}
-          </label>
-          <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="p-6">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-800">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 w-32">Día</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-400">Hora inicio</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-400">Hora fin</th>
-                  <th className="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 w-20">Activo</th>
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-gray-700">
+                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase w-8"></th>
+                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase w-32">Día</th>
+                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Hora inicio</th>
+                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Hora fin</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -418,29 +435,8 @@ export default function FormSede() {
                   const h = form.horarios[dia]
                   const errorKey = `horario_${dia}`
                   return (
-                    <tr key={dia} className={!h.activo ? 'bg-gray-50 dark:bg-gray-800/50 opacity-60' : ''}>
-                      <td className="px-4 py-2 font-medium text-gray-700 dark:text-gray-300">
-                        {DIAS_LABEL[dia]}
-                      </td>
-                      <td className="px-4 py-2">
-                        <input
-                          type="time"
-                          className={`form-input py-1 text-sm ${errors[errorKey] ? 'border-red-400' : ''}`}
-                          value={h.inicio}
-                          disabled={!h.activo || submitting}
-                          onChange={(e) => setHorario(dia, 'inicio', e.target.value)}
-                        />
-                      </td>
-                      <td className="px-4 py-2">
-                        <input
-                          type="time"
-                          className={`form-input py-1 text-sm ${errors[errorKey] ? 'border-red-400' : ''}`}
-                          value={h.fin}
-                          disabled={!h.activo || submitting}
-                          onChange={(e) => setHorario(dia, 'fin', e.target.value)}
-                        />
-                      </td>
-                      <td className="px-4 py-2">
+                    <tr key={dia} className={!h.activo ? 'opacity-50' : ''}>
+                      <td className="py-2 pr-3">
                         <input
                           type="checkbox"
                           className="form-checkbox"
@@ -448,6 +444,30 @@ export default function FormSede() {
                           disabled={submitting}
                           onChange={(e) => setHorario(dia, 'activo', e.target.checked)}
                         />
+                      </td>
+                      <td className="py-2 font-medium text-gray-700 dark:text-gray-300">
+                        {DIAS_LABEL[dia]}
+                      </td>
+                      <td className="py-2 pr-4">
+                        <input
+                          type="time"
+                          className={`form-input py-1 text-sm w-36 ${errors[errorKey] ? 'border-red-400' : ''}`}
+                          value={h.inicio}
+                          disabled={!h.activo || submitting}
+                          onChange={(e) => setHorario(dia, 'inicio', e.target.value)}
+                        />
+                      </td>
+                      <td className="py-2">
+                        <input
+                          type="time"
+                          className={`form-input py-1 text-sm w-36 ${errors[errorKey] ? 'border-red-400' : ''}`}
+                          value={h.fin}
+                          disabled={!h.activo || submitting}
+                          onChange={(e) => setHorario(dia, 'fin', e.target.value)}
+                        />
+                        {errors[errorKey] && (
+                          <p className="text-xs text-red-500 mt-0.5">{errors[errorKey]}</p>
+                        )}
                       </td>
                     </tr>
                   )
@@ -457,11 +477,11 @@ export default function FormSede() {
           </div>
         </div>
 
-        {/* Buttons */}
-        <div className="flex items-center gap-3 pt-2">
-          <button 
-            type="submit" 
-            className="btn-primary px-8 flex items-center gap-2" 
+        {/* ── Buttons ── */}
+        <div className="flex items-center gap-3">
+          <button
+            type="submit"
+            className="btn-primary px-8 flex items-center gap-2"
             disabled={submitting}
           >
             {submitting && (
@@ -472,15 +492,16 @@ export default function FormSede() {
             )}
             {submitting ? 'Guardando...' : 'Guardar'}
           </button>
-          <button 
-            type="button" 
-            className="btn-secondary" 
+          <button
+            type="button"
+            className="btn-secondary"
             onClick={handleCancel}
             disabled={submitting}
           >
             Cancelar
           </button>
         </div>
+
       </form>
     </div>
   )

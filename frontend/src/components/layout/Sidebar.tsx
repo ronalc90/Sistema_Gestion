@@ -140,78 +140,98 @@ export default function Sidebar() {
 
   const sgsstGroups: SgsstGroup[] = [
     {
-      id: 'empresa', label: t('navigation.sgsstGroups.company'),
+      id: 'empresa', label: 'Empresa',
       items: [
-        { id: 'empresa', label: t('sgsst.company.title'), path: '/sgsst/empresa', icon: <FaBuilding /> },
-        { id: 'diagnostico', label: t('sgsst.diagnosis.title'), path: '/sgsst/diagnostico', icon: <FaClipboard /> },
+        { id: 'empresa', label: 'Detalles de mi empresa', path: '/sgsst/empresa', icon: <FaBuilding /> },
+        { id: 'diagnostico', label: 'Diagnóstico inicial', path: '/sgsst/diagnostico', icon: <FaClipboard /> },
       ],
     },
     {
-      id: 'admin', label: t('navigation.sgsstGroups.admin'),
+      id: 'planificacion-sst', label: 'Planificación',
       items: [
-        { id: 'periodos', label: t('sgsst.periods.title'), path: '/sgsst/periodos', icon: <FaCalendarAlt /> },
-        { id: 'matriz-legal', label: t('sgsst.legalMatrix.title'), path: '/sgsst/matriz-legal', icon: <FaListOl /> },
-        { id: 'planeador', label: t('sgsst.activityPlanner.title'), path: '/sgsst/planeador-actividades', icon: <FaCalendar /> },
+        { id: 'periodos', label: 'Períodos de trabajo', path: '/sgsst/periodos', icon: <FaCalendarAlt /> },
+        { id: 'planeador', label: 'Planeador de actividades', path: '/sgsst/planeador-actividades', icon: <FaCalendar /> },
       ],
     },
     {
-      id: 'gestion-sst', label: t('navigation.sgsstGroups.gestion'),
+      id: 'cumplimiento', label: 'Cumplimiento',
       items: [
-        { id: 'riesgos', label: t('sgsst.riskManagement.title'), path: '/sgsst/riesgos', icon: <FaChartArea /> },
-        { id: 'documentos', label: t('sgsst.documentManagement.title'), path: '/sgsst/documentos', icon: <FaFolderOpen /> },
-        { id: 'indicadores', label: t('sgsst.indicators.title'), path: '/sgsst/indicadores', icon: <FaTasks /> },
+        { id: 'matriz-legal', label: 'Matriz legal', path: '/sgsst/matriz-legal', icon: <FaListOl /> },
+        { id: 'matriz-mejora', label: 'Matriz de mejora', path: '/sgsst/matriz-mejora', icon: <FaThumbtack /> },
+        { id: 'acciones', label: 'Acciones correctivas y preventivas', path: '/sgsst/acciones-correctivas', icon: <FaPen /> },
       ],
     },
     {
-      id: 'personal', label: t('navigation.sgsstGroups.personal'),
+      id: 'riesgos', label: 'Gestión de Riesgos',
       items: [
-        { id: 'trabajadores', label: t('sgsst.workers.title'), path: '/sgsst/trabajadores', icon: <FaUsers /> },
-        { id: 'perfiles-cargo', label: t('sgsst.jobProfiles.title'), path: '/sgsst/perfiles-cargo', icon: <FaSlideshare /> },
-        { id: 'ausentismos', label: t('sgsst.absenteeism.title'), path: '/sgsst/ausentismos', icon: <FaUserTimes /> },
+        { id: 'gestion-riesgos', label: 'Gestión de riesgos', path: '/sgsst/riesgos', icon: <FaChartArea /> },
+        { id: 'tar', label: 'Gestión T.A.R.', path: '/sgsst/tar', icon: <FaCrosshairs /> },
+        { id: 'actos', label: 'Actos y condiciones inseguras', path: '/sgsst/actos-condiciones', icon: <FaExclamationTriangle /> },
       ],
     },
     {
-      id: 'salud', label: t('navigation.sgsstGroups.health'),
+      id: 'talento', label: 'Talento Humano',
       items: [
-        { id: 'medicina', label: t('sgsst.occupationalHealth.title'), path: '/sgsst/medicina-laboral', icon: <FaUserMd /> },
-        { id: 'accidentes', label: t('sgsst.accidents.title'), path: '/sgsst/accidentes', icon: <FaHeartbeat /> },
+        { id: 'trabajadores', label: 'Mis trabajadores', path: '/sgsst/trabajadores', icon: <FaUsers /> },
+        { id: 'perfiles-cargo', label: 'Perfiles de cargo y S.V.E', path: '/sgsst/perfiles-cargo', icon: <FaSlideshare /> },
+        { id: 'ausentismos', label: 'Reporte de ausentismos', path: '/sgsst/ausentismos', icon: <FaUserTimes /> },
       ],
     },
     {
-      id: 'evaluaciones', label: t('navigation.sgsstGroups.evaluations'),
+      id: 'salud', label: 'Salud Ocupacional',
       items: [
-        { id: 'bateria', label: t('sgsst.psychosocial.title'), path: '/sgsst/bateria-psicosocial', icon: <FaListAlt /> },
-        { id: 'tar', label: t('sgsst.tar.title'), path: '/sgsst/tar', icon: <FaCrosshairs /> },
+        { id: 'medicina', label: 'Medicina laboral', path: '/sgsst/medicina-laboral', icon: <FaUserMd /> },
+        { id: 'bateria', label: 'Batería psicosocial', path: '/sgsst/bateria-psicosocial', icon: <FaListAlt /> },
       ],
     },
     {
-      id: 'contratistas-riesgos', label: t('navigation.sgsstGroups.contractors'),
+      id: 'incidentes', label: 'Incidentes y Accidentes',
       items: [
-        { id: 'contratistas', label: t('sgsst.contractors.title'), path: '/sgsst/contratistas', icon: <FaHandshake /> },
-        { id: 'actos', label: t('sgsst.unsafeConditions.title'), path: '/sgsst/actos-condiciones', icon: <FaExclamationTriangle /> },
+        { id: 'accidentes', label: 'Reporte de incidentes y accidentes', path: '/sgsst/accidentes', icon: <FaHeartbeat /> },
       ],
     },
     {
-      id: 'mejora', label: t('navigation.sgsstGroups.improvement'),
+      id: 'documentacion', label: 'Documentación',
       items: [
-        { id: 'matriz-mejora', label: t('sgsst.improvement.title'), path: '/sgsst/matriz-mejora', icon: <FaThumbtack /> },
-        { id: 'acciones', label: t('sgsst.correctiveActions.title'), path: '/sgsst/acciones-correctivas', icon: <FaPen /> },
-        { id: 'inspecciones', label: t('sgsst.inspections.title'), path: '/sgsst/inspecciones', icon: <FaSearch /> },
+        { id: 'documentos', label: 'Gestión documental', path: '/sgsst/documentos', icon: <FaFolderOpen /> },
+        { id: 'indicadores', label: 'Fichas de indicadores', path: '/sgsst/indicadores', icon: <FaTasks /> },
       ],
     },
     {
-      id: 'emergencias', label: t('navigation.sgsstGroups.emergencies'),
+      id: 'inspecciones', label: 'Inspecciones',
       items: [
-        { id: 'planes', label: t('sgsst.emergency.title'), path: '/sgsst/emergencias', icon: <FaBullhorn /> },
-        { id: 'simulacros', label: t('sgsst.drills.title'), path: '/sgsst/simulacros', icon: <FaBullseye /> },
+        { id: 'inspecciones', label: 'Inspecciones de seguridad', path: '/sgsst/inspecciones', icon: <FaSearch /> },
       ],
     },
     {
-      id: 'especiales', label: t('navigation.sgsstGroups.special'),
+      id: 'emergencias', label: 'Emergencias',
       items: [
-        { id: 'vial', label: t('sgsst.roadSafety.title'), path: '/sgsst/seguridad-vial', icon: <FaCar /> },
-        { id: 'quimicos', label: t('sgsst.chemicals.title'), path: '/sgsst/quimicos', icon: <FaFlask /> },
-        { id: 'acceso', label: t('sgsst.accessControl.title'), path: '/sgsst/controles-acceso', icon: <FaUnlockAlt /> },
+        { id: 'planes', label: 'Planes de emergencia', path: '/sgsst/emergencias', icon: <FaBullhorn /> },
+        { id: 'simulacros', label: 'Evaluación de simulacros', path: '/sgsst/simulacros', icon: <FaBullseye /> },
+      ],
+    },
+    {
+      id: 'contratistas-sst', label: 'Contratistas',
+      items: [
+        { id: 'contratistas', label: 'Contratistas', path: '/sgsst/contratistas', icon: <FaHandshake /> },
+      ],
+    },
+    {
+      id: 'seguridad-vial', label: 'Seguridad Vial',
+      items: [
+        { id: 'vial', label: 'Seguridad vial', path: '/sgsst/seguridad-vial', icon: <FaCar /> },
+      ],
+    },
+    {
+      id: 'sistemas-externos', label: 'Sistemas Externos',
+      items: [
+        { id: 'quimicos', label: 'Sistema gestión de químicos', path: '/sgsst/quimicos', icon: <FaFlask /> },
+      ],
+    },
+    {
+      id: 'seguridad', label: 'Seguridad',
+      items: [
+        { id: 'acceso', label: 'Controles de acceso', path: '/sgsst/controles-acceso', icon: <FaUnlockAlt /> },
       ],
     },
   ]
@@ -241,7 +261,7 @@ export default function Sidebar() {
 
   const switchModule = (mod: 'gestion' | 'sgsst') => {
     setModule(mod)
-    navigate(mod === 'gestion' ? '/' : '/sgsst/empresa')
+    navigate(mod === 'gestion' ? '/' : '/sgsst')
   }
 
   return (
@@ -366,6 +386,20 @@ export default function Sidebar() {
         {/* SGSST */}
         {activeModule === 'sgsst' && (
           <div className="space-y-0.5">
+            <NavLink
+              to="/sgsst"
+              end
+              className={({ isActive }) =>
+                `w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive ? 'bg-primary-800 text-white' : 'text-white/80 hover:bg-primary-600 hover:text-white'
+                }`
+              }
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              <span className="flex-1 text-left truncate text-xs">Inicio</span>
+            </NavLink>
             {sgsstGroups.map((group) => {
               const isOpen = openGroups[group.id]
               const hasActive = group.items.some(

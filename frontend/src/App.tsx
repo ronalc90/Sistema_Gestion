@@ -51,10 +51,12 @@ import AccionesCorrectivas from './pages/sgsst/AccionesCorrectivas'
 import InspeccionesSeguridad from './pages/sgsst/InspeccionesSeguridad'
 import PlanesEmergencia from './pages/sgsst/PlanesEmergencia'
 import EvaluacionSimulacros from './pages/sgsst/EvaluacionSimulacros'
-import SeguridadVial from './pages/sgsst/SeguridadVial'
 import GestionQuimicos from './pages/sgsst/GestionQuimicos'
 import ControlesAcceso from './pages/sgsst/ControlesAcceso'
+// Seguridad Vial
+import { SeguridadVial } from './pages/seguridadVial'
 import Inicio from './pages/inicio/Inicio'
+import InicioSgsst from './pages/sgsst/InicioSgsst'
 // Admin
 import GestionUsuarios from './pages/admin/GestionUsuarios'
 import MetricasPlataforma from './pages/admin/MetricasPlataforma'
@@ -148,6 +150,7 @@ export default function App() {
           <Route path="admin/metricas" element={<AdminRoute><MetricasPlataforma /></AdminRoute>} />
 
           {/* SGSST */}
+          <Route path="sgsst" element={<InicioSgsst />} />
           <Route path="sgsst/empresa" element={<DetallesEmpresa />} />
           <Route path="sgsst/diagnostico" element={<DiagnosticoInicial />} />
           <Route path="sgsst/periodos" element={<PeriodosTrabajo />} />

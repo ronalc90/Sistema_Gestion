@@ -3,7 +3,7 @@ import {
   TruckIcon, 
   UserIcon, 
   DocumentTextIcon, 
-  ClipboardCheckIcon,
+  ClipboardDocumentCheckIcon,
   ExclamationTriangleIcon,
   CalendarIcon,
   CheckCircleIcon,
@@ -100,7 +100,7 @@ export default function DashboardVial() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Total Vehículos"
-            value={data.totalVehículos}
+            value={data.totalVehiculos}
             icon={TruckIcon}
             color="blue"
             subtitle="En el sistema"
@@ -177,14 +177,14 @@ export default function DashboardVial() {
       {/* Inspecciones */}
       <div>
         <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-          <ClipboardCheckIcon className="w-5 h-5" />
+          <ClipboardDocumentCheckIcon className="w-5 h-5" />
           Inspecciones Preoperacionales - Hoy
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <StatCard
             title="Total Inspecciones"
             value={data.inspeccionesHoy}
-            icon={ClipboardCheckIcon}
+            icon={ClipboardDocumentCheckIcon}
             color="blue"
             subtitle="Realizadas hoy"
           />
