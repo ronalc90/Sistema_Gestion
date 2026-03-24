@@ -255,9 +255,23 @@ export default function Sidebar() {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
     () => Object.fromEntries(sgsstGroups.map((g) => [g.id, false]))
   )
+  const [openSubGroups, setOpenSubGroups] = useState<Record<string, boolean>>(() => {
+    // Abrir el sub-grupo si alguno de sus ítems está activo
+    const init: Record<string, boolean> = {}
+    gestionItems.forEach((item) => {
+      item.subGroups?.forEach((group) => {
+        const key = `${item.id}-${group.label}`
+        init[key] = group.items.some(
+          (c) => location.pathname === c.path || location.pathname.startsWith(c.path + '/')
+        )
+      })
+    })
+    return init
+  })
 
   const toggleMenu = (id: string) => setOpenMenus((p) => ({ ...p, [id]: !p[id] }))
   const toggleGroup = (id: string) => setOpenGroups((p) => ({ ...p, [id]: !p[id] }))
+  const toggleSubGroup = (key: string) => setOpenSubGroups((p) => ({ ...p, [key]: !p[key] }))
 
   const switchModule = (mod: 'gestion' | 'sgsst') => {
     setModule(mod)
@@ -366,14 +380,31 @@ export default function Sidebar() {
                     <div className="mt-0.5 ml-4 space-y-0.5">
                       {item.children
                         ? item.children.map(renderLink)
-                        : item.subGroups?.map((group) => (
-                            <div key={group.label}>
-                              <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/40">
-                                {group.label}
-                              </p>
-                              {group.items.map(renderLink)}
-                            </div>
-                          ))
+                        : item.subGroups?.map((group) => {
+                            const subKey = `${item.id}-${group.label}`
+                            const subOpen = openSubGroups[subKey]
+                            return (
+                              <div key={group.label}>
+                                <button
+                                  onClick={() => toggleSubGroup(subKey)}
+                                  className="w-full flex items-center justify-between px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/40 hover:text-white/70 transition-colors"
+                                >
+                                  <span>{group.label}</span>
+                                  <svg
+                                    className={`w-3 h-3 shrink-0 transition-transform ${subOpen ? 'rotate-180' : ''}`}
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </button>
+                                {subOpen && (
+                                  <div className="space-y-0.5">
+                                    {group.items.map(renderLink)}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })
                       }
                     </div>
                   )}

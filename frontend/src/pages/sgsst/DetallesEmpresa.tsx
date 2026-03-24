@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { FaBuilding, FaSave, FaInfoCircle, FaMapMarkerAlt, FaPhone, FaEnvelope, FaGlobe, FaIdCard } from 'react-icons/fa'
 import toast from 'react-hot-toast'
 

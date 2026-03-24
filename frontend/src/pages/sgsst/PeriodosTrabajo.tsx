@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { FaCalendarAlt, FaInfoCircle, FaCheck, FaArrowLeft } from 'react-icons/fa'
+import { FaInfoCircle, FaCheck, FaArrowLeft } from 'react-icons/fa'
 import { Bar, Doughnut } from 'react-chartjs-2'
 import {
   Chart as ChartJS,

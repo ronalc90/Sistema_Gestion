@@ -12,18 +12,25 @@
     "db:seed": "ts-node prisma/seed.ts",
     "db:studio": "prisma studio"
   },
-  "keywords": ["api", "gestion", "empresarial"],
+  "keywords": [
+    "api",
+    "gestion",
+    "empresarial"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.7.0",
+    "@types/nodemailer": "^7.0.11",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^8.0.3",
+    "twilio": "^5.13.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

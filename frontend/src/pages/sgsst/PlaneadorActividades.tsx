@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react'
-import { 
-  FaCalendar, FaFilter, FaChartBar, FaTable, FaPlus, FaEdit, FaTrash, 
-  FaSearch, FaDownload, FaUpload, FaFileCsv, FaFileExcel, FaPrint,
-  FaChevronLeft, FaChevronRight, FaCalendarDay, FaCalendarWeek, 
-  FaClipboardList, FaUserFriends, FaMoneyBill, FaClock, FaCheckCircle,
-  FaExclamationTriangle, FaChartPie, FaChartLine, FaEllipsisV,
-  faUser
+import { useState } from 'react'
+import {
+  FaCalendar, FaFilter, FaChartBar, FaPlus, FaEdit, FaTrash,
+  FaSearch, FaFileCsv, FaFileExcel, FaPrint,
+  FaChevronLeft, FaChevronRight,
+  FaClipboardList, FaCheckCircle,
+  FaChartPie
 } from 'react-icons/fa'
-import { Bar, Doughnut, Line, Pie } from 'react-chartjs-2'
+import { Bar, Doughnut, Pie } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -317,7 +316,7 @@ export default function PlaneadorActividades() {
       setLoading(false)
       
       if (filtradas.length === 0) {
-        toast.info('No se encontraron actividades con los filtros seleccionados')
+        toast('No se encontraron actividades con los filtros seleccionados')
       }
     }, 500)
   }

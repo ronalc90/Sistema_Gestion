@@ -721,3 +721,80 @@ export interface DashboardSeguridadVial {
   inspeccionesAprobadas: number;
   inspeccionesConNovedades: number;
 }
+
+// ==========================================
+// TIPOS DE CONTROL DE ACCESO
+// ==========================================
+
+export type TipoAcceso = 'ENTRADA' | 'SALIDA';
+export type TipoPersonaAcceso = 'EMPLEADO' | 'CONTRATISTA' | 'VISITANTE';
+export type EstadoAcceso = 'ACTIVO' | 'INACTIVO';
+export type ModoVisitante = 'NO_PERMITIR' | 'PERMITIR_ANONIMO' | 'PERMITIR_CON_REGISTRO';
+export type MetodoAutenticacion = 'QR' | 'DOCUMENTO' | 'TARJETA' | 'MANUAL';
+
+export interface RegistroAcceso {
+  id: string;
+  fecha: string;
+  hora: string;
+  tipoAcceso: TipoAcceso;
+  tipoPersona: TipoPersonaAcceso;
+  personaId?: string;
+  personaNombre?: string;
+  documento?: string;
+  empleadoId?: string;
+  empleado?: Empleado;
+  contratistaId?: string;
+  contratista?: Contratista;
+  visitanteId?: string;
+  visitante?: Visitante;
+  sedeId: string;
+  sede?: Sede;
+  destinoId?: string;
+  destino?: Destino;
+  observaciones?: string;
+  metodoAutenticacion: MetodoAutenticacion;
+  verificadoPor?: string;
+  usuarioVerificador?: User;
+  fotoCaptura?: string;
+  temperatura?: number;
+  itemsRegistrados?: string;
+  vehiculoPlaca?: string;
+  createdAt: string;
+}
+
+export interface ConfiguracionAcceso {
+  id: string;
+  modoVisitantes: ModoVisitante;
+  requiereTemperatura: boolean;
+  requiereFoto: boolean;
+  permitirAccesoManual: boolean;
+  tiempoMaximoVisitaHoras: number;
+  notificarAdminNuevosRegistros: boolean;
+  sedeId?: string;
+  sede?: Sede;
+  updatedAt: string;
+}
+
+export interface CodigoQRAcceso {
+  id: string;
+  codigo: string;
+  sedeId: string;
+  sede?: Sede;
+  activo: boolean;
+  fechaGeneracion: string;
+  fechaExpiracion?: string;
+  usosMaximos?: number;
+  usosActuales: number;
+  tipoPermitido: TipoPersonaAcceso[];
+  createdAt: string;
+}
+
+export interface DashboardControlAcceso {
+  accesosMesActual: number;
+  accesosHoy: number;
+  accesosPorTipo: Record<TipoPersonaAcceso, number>;
+  accesosPorMes: { mes: string; cantidad: number }[];
+  personasDentro: number;
+  visitantesActivos: number;
+  alertasPendientes: number;
+}

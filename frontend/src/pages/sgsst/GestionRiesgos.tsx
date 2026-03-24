@@ -9,7 +9,7 @@ import {
   FaFileAlt, FaFileCsv, FaLink, FaHome, FaSyncAlt,
   FaExclamationTriangle, FaQuestionCircle, FaCalendarAlt,
   FaEdit, FaEye, FaTrash, FaInfoCircle, FaTimes, FaCheck,
-  FaSave, FaChevronRight, FaFilter,
+  FaSave, FaChevronRight,
 } from 'react-icons/fa'
 import toast from 'react-hot-toast'
 

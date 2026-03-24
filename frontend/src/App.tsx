@@ -52,7 +52,8 @@ import InspeccionesSeguridad from './pages/sgsst/InspeccionesSeguridad'
 import PlanesEmergencia from './pages/sgsst/PlanesEmergencia'
 import EvaluacionSimulacros from './pages/sgsst/EvaluacionSimulacros'
 import GestionQuimicos from './pages/sgsst/GestionQuimicos'
-import ControlesAcceso from './pages/sgsst/ControlesAcceso'
+// Control de Acceso
+import { ControlAcceso } from './pages/controlAcceso'
 // Seguridad Vial
 import { SeguridadVial } from './pages/seguridadVial'
 import Inicio from './pages/inicio/Inicio'
@@ -175,7 +176,7 @@ export default function App() {
           <Route path="sgsst/simulacros" element={<EvaluacionSimulacros />} />
           <Route path="sgsst/seguridad-vial" element={<SeguridadVial />} />
           <Route path="sgsst/quimicos" element={<GestionQuimicos />} />
-          <Route path="sgsst/controles-acceso" element={<ControlesAcceso />} />
+          <Route path="sgsst/controles-acceso" element={<ControlAcceso />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
