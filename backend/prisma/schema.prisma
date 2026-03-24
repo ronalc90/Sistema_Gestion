@@ -422,6 +422,134 @@ model Visitante {
 }
 
 // ==========================================
+// SGSST — CONTRATISTAS Y TRABAJADORES
+// ==========================================
+
+model ContratistaSST {
+  id                       String   @id @default(uuid())
+  // 1. Datos Básicos
+  razonSocial              String
+  representante            String?
+  nombreComercial          String?
+  nit                      String   @unique
+  nitDigito                String?
+  direccion                String?
+  telefono                 String?
+  email                    String?
+  sitioWeb                 String?
+  // 2. Clasificación Empresarial
+  tipo                     String?
+  tamano                   String?
+  departamento             String?
+  municipio                String?
+  actividadEconomica       String?
+  // 3. Clasificación SG-SST
+  arl                      String?
+  nivelRiesgo              String?
+  vencimientoSS            String?
+  operadorPagoSS           String?
+  centroEntrenamiento      String?
+  consultaExamenMedico     Boolean  @default(false) @map("consulta_examen_medico")
+  ipsExamenes              String?  @map("ips_examenes")
+  // 4. Detalles de Contratación
+  clasificacionCategoria   String?  @map("clasificacion_categoria")
+  clasificacionCuadrante   String?  @map("clasificacion_cuadrante")
+  personaContacto          String?  @map("persona_contacto")
+  contactoAdmin            String?  @map("contacto_admin")
+  actividades              String?
+  costoHora                String?  @map("costo_hora")
+  // 5. Permisos / Configuración
+  activo                   Boolean  @default(true)
+  actualizacionMasivaSS    String?  @map("actualizacion_masiva_ss")
+  actualizacionMasivaCursos String? @map("actualizacion_masiva_cursos")
+  usuario                  String?
+  clave                    String?
+  permisosEspeciales       Boolean  @default(false) @map("permisos_especiales")
+  // 6. Categorización Interna
+  categoria1               String?
+  categoria2               String?
+  categoria3               String?
+  // 7. Integración Externa
+  codigoSistemaExterno     String?  @map("codigo_sistema_externo")
+  // Estado
+  estado                   String   @default("Activo")
+  diasCorte                Int      @default(0) @map("dias_corte")
+
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  trabajadores             TrabajadorSST[]
+
+  @@map("contratistas_sst")
+}
+
+model TrabajadorSST {
+  id                   String   @id @default(uuid())
+  documento            String
+  nombre               String
+  cargo                String?
+  sede                 String?
+  // Flags
+  historia             Boolean  @default(false)
+  activo               Boolean  @default(true)
+  habilitado           Boolean  @default(true)
+  parafiscales         Boolean  @default(false)
+  certificacion        Boolean  @default(false)
+  otrosCursos          Boolean  @default(false) @map("otros_cursos")
+  induccion            Boolean  @default(false)
+  empleadoActivo       Boolean  @default(true) @map("empleado_activo")
+  // Sec 1 — Personal
+  fechaExpedicion      String?  @map("fecha_expedicion")
+  fechaNacimiento      String?  @map("fecha_nacimiento")
+  sexo                 String?
+  estadoCivil          String?  @map("estado_civil")
+  ubicacionFisica      String?  @map("ubicacion_fisica")
+  tipoVinculacion      String?  @map("tipo_vinculacion")
+  salario              String?
+  nivelEscolaridad     String?  @map("nivel_escolaridad")
+  raza                 String?
+  // Sec 2 — Contacto / Vital
+  correo               String?
+  eps                  String?
+  direccionResidencia  String?  @map("direccion_residencia")
+  telefonoResidencia   String?  @map("telefono_residencia")
+  telefonoMovil        String?  @map("telefono_movil")
+  grupoSanguineo       String?  @map("grupo_sanguineo")
+  discapacidad         String?
+  contactoEmergencias  String?  @map("contacto_emergencias")
+  telefonoEmergencias  String?  @map("telefono_emergencias")
+  enfermedades         String[] @default([])
+  transporte           String?
+  ingresoEmpresa       String?  @map("ingreso_empresa")
+  retiroEmpresa        String?  @map("retiro_empresa")
+  // Sec 3 — Certificaciones
+  vencExamen           String?  @map("venc_examen")
+  vencAlturas          String?  @map("venc_alturas")
+  vencConfinados       String?  @map("venc_confinados")
+  certRequeridas       String[] @default([]) @map("cert_requeridas")
+  // Sec 4 — Controles de Acceso
+  accesoContratista    Boolean  @default(true) @map("acceso_contratista")
+  estadoSS             Boolean  @default(false) @map("estado_ss")
+  certTareas           Boolean  @default(false) @map("cert_tareas")
+  cursoEspecifico      Boolean  @default(false) @map("curso_especifico")
+  induccionSitio       Boolean  @default(false) @map("induccion_sitio")
+  fechaRevision        String?  @map("fecha_revision")
+  periodicidadExamen   Int      @default(365) @map("periodicidad_examen")
+  accesoGeneral        Boolean  @default(true) @map("acceso_general")
+  // Sec 5 — Multimedia / Notas
+  fotografia           String?
+  notas                String?
+
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  contratistaId        String         @map("contratista_id")
+  contratista          ContratistaSST @relation(fields: [contratistaId], references: [id], onDelete: Cascade)
+
+  @@map("trabajadores_sst")
+}
+
+// ==========================================
 // DOCUMENTOS
 // ==========================================
 

@@ -1,5 +1,6 @@
 import { useState, FormEvent, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { useTranslation } from '../hooks/useTranslation'
@@ -12,7 +13,8 @@ export default function Login() {
   const login = useAuthStore((s) => s.login)
   const { theme, toggleTheme } = useThemeStore()
   const { t, language, setLanguage, languages } = useTranslation()
-  
+  const { executeRecaptcha } = useGoogleReCaptcha()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -27,7 +29,11 @@ export default function Login() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const ok = await login(email, password)
+    let captchaToken = ''
+    if (executeRecaptcha) {
+      try { captchaToken = await executeRecaptcha('login') } catch { /* silent */ }
+    }
+    const ok = await login(email, password, captchaToken)
     setLoading(false)
     if (ok) {
       toast.success(t('success.login'))
@@ -188,8 +194,15 @@ export default function Login() {
           </div>
         </div>
 
+        {/* reCAPTCHA notice */}
+        <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">
+          Protegido por{' '}
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer" className="underline hover:text-gray-600 dark:hover:text-gray-300">reCAPTCHA v3</a>
+          {' '}de Google
+        </p>
+
         {/* Footer */}
-        <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-6">
+        <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">
           © {new Date().getFullYear()} {t('common.appName')} — Todos los derechos reservados
         </p>
       </div>

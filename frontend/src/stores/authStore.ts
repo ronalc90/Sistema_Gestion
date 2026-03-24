@@ -8,7 +8,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isInitialized: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, captchaToken?: string) => Promise<boolean>;
   logout: () => void;
   initialize: () => Promise<void>;
 }
@@ -21,9 +21,9 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isInitialized: false,
 
-      login: async (email: string, password: string) => {
+      login: async (email: string, password: string, captchaToken?: string) => {
         try {
-          const result = await authApi.login(email, password);
+          const result = await authApi.login(email, password, captchaToken);
           if (result.success && result.data) {
             const { user, token } = result.data;
             localStorage.setItem('auth_token', token);

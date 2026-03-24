@@ -24,6 +24,8 @@ import turnoRoutes from './routes/turno.routes';
 import visitanteRoutes from './routes/visitante.routes';
 import documentoRoutes from './routes/documento.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import notificationsRoutes from './routes/notifications.routes';
+import sstContratistaRoutes from './routes/sstContratista.routes';
 
 // Importar middlewares
 import { errorHandler } from './middleware/errorHandler';
@@ -69,6 +71,8 @@ app.use('/api/turnos', turnoRoutes);
 app.use('/api/visitantes', visitanteRoutes);
 app.use('/api/documentos', documentoRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/notifications', notificationsRoutes);
+app.use('/api/sst/contratistas', sstContratistaRoutes);
 
 // 404 handler
 app.use((_req: Request, res: Response) => {

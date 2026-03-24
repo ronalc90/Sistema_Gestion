@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Bar, Doughnut } from 'react-chartjs-2'
 import {
   Chart as ChartJS, CategoryScale, LinearScale, BarElement,
@@ -14,6 +14,8 @@ import {
   FaFile, FaHeartbeat, FaWhatsapp,
 } from 'react-icons/fa'
 import toast from 'react-hot-toast'
+import { notificationsApi } from '../../api/notifications.api'
+import { sstContratistasApi } from '../../api/sstContratistas.api'
 import * as XLSX from 'xlsx'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend)
@@ -113,6 +115,7 @@ interface Trabajador {
   nivelEscolaridad: string
   raza: string
   // Sec 2
+  correo: string
   eps: string
   direccionResidencia: string
   telefonoResidencia: string
@@ -425,7 +428,7 @@ const EMPTY_TRABAJADOR: TrabajadorForm = {
   parafiscales:false,certificacion:false,otrosCursos:false,induccion:false,
   contratistaId:'',sede:'',empleadoActivo:true,fechaExpedicion:'',fechaNacimiento:'',
   sexo:'M',estadoCivil:'Soltero',ubicacionFisica:'',tipoVinculacion:'Contratista',
-  salario:'',nivelEscolaridad:'',raza:'No Aplica',eps:'',direccionResidencia:'',
+  salario:'',nivelEscolaridad:'',raza:'No Aplica',correo:'',eps:'',direccionResidencia:'',
   telefonoResidencia:'',telefonoMovil:'',grupoSanguineo:'O+',discapacidad:'NO',
   contactoEmergencias:'',telefonoEmergencias:'',enfermedades:['Ninguno'],
   transporte:'Bus Urbano',ingresoEmpresa:'',retiroEmpresa:'',
@@ -436,14 +439,14 @@ const EMPTY_TRABAJADOR: TrabajadorForm = {
 }
 
 const TRABAJADORES_MOCK: Trabajador[] = [
-  { id:'w1',documento:'1002490066',nombre:'LUIS EDUARDO PEÑALOZA DE LA OSSA',cargo:'',historia:false,activo:true,habilitado:true,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'1',sede:'CONTROL PROVISIONAL LA RIVIERE ET3 T2',empleadoActivo:true,fechaExpedicion:'2005-03-10',fechaNacimiento:'1985-03-15',sexo:'M',estadoCivil:'Casado',ubicacionFisica:'Torre A Piso 3',tipoVinculacion:'Contratista',salario:'2500000',nivelEscolaridad:'Tecnico',raza:'No Aplica',eps:'Sura EPS',direccionResidencia:'Calle 50 # 30-15',telefonoResidencia:'6017551234',telefonoMovil:'3105551234',grupoSanguineo:'O+',discapacidad:'NO',contactoEmergencias:'María Peñaloza',telefonoEmergencias:'3115559876',enfermedades:['Ninguno'],transporte:'Bus Urbano',ingresoEmpresa:'2023-01-15',retiroEmpresa:'',vencExamen:'2025-12-31',vencAlturas:'2025-06-30',vencConfinados:'',certRequeridas:['Alturas'],accesoContratista:true,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'2025-09-30',periodicidadExamen:365,accesoGeneral:true,fotografia:'',notas:'' },
-  { id:'w2',documento:'1037625656',nombre:'MELISSA LOMBANA FERRER',cargo:'PROFESIONAL SST',historia:true,activo:false,habilitado:false,parafiscales:false,certificacion:false,otrosCursos:false,induccion:false,contratistaId:'2',sede:'Salitre Centrik Town',empleadoActivo:false,fechaExpedicion:'2010-07-22',fechaNacimiento:'1990-07-22',sexo:'F',estadoCivil:'Soltera',ubicacionFisica:'Oficina SST',tipoVinculacion:'PrestacionServicios',salario:'4500000',nivelEscolaridad:'Profesional Completo',raza:'No Aplica',eps:'Sanitas',direccionResidencia:'Carrera 15 # 85-20',telefonoResidencia:'6014441122',telefonoMovil:'3164441122',grupoSanguineo:'A+',discapacidad:'NO',contactoEmergencias:'Julio Lombana',telefonoEmergencias:'3104449911',enfermedades:['Ninguno'],transporte:'Vehiculo Individual',ingresoEmpresa:'2022-06-01',retiroEmpresa:'',vencExamen:'2025-05-31',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:false,estadoSS:false,certTareas:false,cursoEspecifico:false,induccionSitio:false,fechaRevision:'',periodicidadExamen:365,accesoGeneral:false,fotografia:'',notas:'Contrato pendiente de renovación' },
-  { id:'w3',documento:'1012403694',nombre:'DILY ZULAIDY LATORRE LUQUE',cargo:'PROFESIONAL SST',historia:false,activo:false,habilitado:false,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'2',sede:'.',empleadoActivo:false,fechaExpedicion:'2012-11-05',fechaNacimiento:'1992-11-05',sexo:'F',estadoCivil:'Soltero',ubicacionFisica:'',tipoVinculacion:'PrestacionServicios',salario:'4000000',nivelEscolaridad:'Profesional Completo',raza:'No Aplica',eps:'Compensar',direccionResidencia:'Av 68 # 22-15',telefonoResidencia:'6013332200',telefonoMovil:'3173332200',grupoSanguineo:'B+',discapacidad:'NO',contactoEmergencias:'Rosa Luque',telefonoEmergencias:'3183339988',enfermedades:['Ninguno'],transporte:'Medio Masivo',ingresoEmpresa:'2023-03-01',retiroEmpresa:'',vencExamen:'2025-09-30',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:false,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'',periodicidadExamen:365,accesoGeneral:false,fotografia:'',notas:'' },
-  { id:'w4',documento:'1012403695',nombre:'DILY ZULAIDY LATORRE LUQUE',cargo:'PROFESIONAL CONSULTORIA',historia:false,activo:false,habilitado:true,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'2',sede:'SinAsignar - Incorrecta',empleadoActivo:true,fechaExpedicion:'2012-11-05',fechaNacimiento:'1992-11-05',sexo:'F',estadoCivil:'Soltero',ubicacionFisica:'',tipoVinculacion:'Contratista',salario:'3800000',nivelEscolaridad:'Profesional Completo',raza:'No Aplica',eps:'Compensar',direccionResidencia:'Av 68 # 22-15',telefonoResidencia:'6013332200',telefonoMovil:'3173332200',grupoSanguineo:'B+',discapacidad:'NO',contactoEmergencias:'Rosa Luque',telefonoEmergencias:'3183339988',enfermedades:['Ninguno'],transporte:'Medio Masivo',ingresoEmpresa:'2023-08-01',retiroEmpresa:'',vencExamen:'2025-12-31',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:false,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'',periodicidadExamen:365,accesoGeneral:false,fotografia:'',notas:'' },
-  { id:'w5',documento:'8164901',nombre:'SANTIAGO MOSQUERA',cargo:'GERENTE',historia:false,activo:false,habilitado:true,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'2',sede:'SinAsignar - Incorrecta',empleadoActivo:false,fechaExpedicion:'2000-04-18',fechaNacimiento:'1978-04-18',sexo:'M',estadoCivil:'Casado',ubicacionFisica:'Gerencia',tipoVinculacion:'Empleado',salario:'8000000',nivelEscolaridad:'Especialista',raza:'No Aplica',eps:'Salud Total',direccionResidencia:'Calle 100 # 9-43',telefonoResidencia:'6016667788',telefonoMovil:'3006667788',grupoSanguineo:'O-',discapacidad:'NO',contactoEmergencias:'Patricia Mosquera',telefonoEmergencias:'3016669900',enfermedades:['Hipertensión'],transporte:'Vehiculo Individual',ingresoEmpresa:'2020-01-01',retiroEmpresa:'',vencExamen:'2026-01-31',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:false,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'2026-01-01',periodicidadExamen:365,accesoGeneral:true,fotografia:'',notas:'' },
-  { id:'w6',documento:'1022349317',nombre:'GUSTAVO DIAZ CIFUENTES',cargo:'APOYO EN OFICIOS VARIOS',historia:false,activo:true,habilitado:true,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'3',sede:'SinAsignar - Incorrecta',empleadoActivo:true,fechaExpedicion:'2015-09-12',fechaNacimiento:'1995-09-12',sexo:'M',estadoCivil:'Soltero',ubicacionFisica:'Bodega',tipoVinculacion:'Contratista',salario:'1300000',nivelEscolaridad:'Secundaria Completa',raza:'No Aplica',eps:'Nueva EPS',direccionResidencia:'Cra 30 # 4-50',telefonoResidencia:'6014448877',telefonoMovil:'3114448877',grupoSanguineo:'A-',discapacidad:'NO',contactoEmergencias:'Carmen Cifuentes',telefonoEmergencias:'3124449966',enfermedades:['Ninguno'],transporte:'Bicicleta Particular',ingresoEmpresa:'2024-02-01',retiroEmpresa:'',vencExamen:'2025-08-31',vencAlturas:'2025-03-31',vencConfinados:'',certRequeridas:['Alturas','SeguridadVial'],accesoContratista:true,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'2025-08-01',periodicidadExamen:365,accesoGeneral:true,fotografia:'',notas:'' },
-  { id:'w7',documento:'1045678912',nombre:'ANDREA CAROLINA MESA RESTREPO',cargo:'INSPECTOR SST',historia:true,activo:true,habilitado:true,parafiscales:true,certificacion:true,otrosCursos:false,induccion:true,contratistaId:'1',sede:'Obra Norte',empleadoActivo:true,fechaExpedicion:'2013-05-20',fechaNacimiento:'1993-05-20',sexo:'F',estadoCivil:'Union Libre',ubicacionFisica:'Campo',tipoVinculacion:'TerminoFijo',salario:'2800000',nivelEscolaridad:'Tecnologico',raza:'No Aplica',eps:'Famisanar',direccionResidencia:'Calle 72 # 45-12',telefonoResidencia:'6018881122',telefonoMovil:'3208881122',grupoSanguineo:'B-',discapacidad:'NO',contactoEmergencias:'Luis Mesa',telefonoEmergencias:'3218889900',enfermedades:['Ninguno'],transporte:'Motocicleta',ingresoEmpresa:'2023-07-01',retiroEmpresa:'',vencExamen:'2026-07-31',vencAlturas:'2025-12-31',vencConfinados:'2025-06-30',certRequeridas:['Alturas','EspaciosConfinados','TrabajoEnCaliente'],accesoContratista:true,estadoSS:true,certTareas:true,cursoEspecifico:false,induccionSitio:true,fechaRevision:'2026-01-01',periodicidadExamen:365,accesoGeneral:true,fotografia:'',notas:'' },
-  { id:'w8',documento:'1098765432',nombre:'CAMILO ERNESTO VARGAS PINILLA',cargo:'OPERARIO',historia:false,activo:true,habilitado:false,parafiscales:false,certificacion:false,otrosCursos:false,induccion:false,contratistaId:'6',sede:'SinAsignar - Incorrecta',empleadoActivo:true,fechaExpedicion:'2018-01-30',fechaNacimiento:'1998-01-30',sexo:'M',estadoCivil:'Soltero',ubicacionFisica:'',tipoVinculacion:'ObraLabor',salario:'1160000',nivelEscolaridad:'Secundaria Incompleta',raza:'No Aplica',eps:'Coosalud',direccionResidencia:'Transv 22 # 15-8',telefonoResidencia:'',telefonoMovil:'3001112233',grupoSanguineo:'O+',discapacidad:'NO',contactoEmergencias:'Rosa Pinilla',telefonoEmergencias:'3011119988',enfermedades:['Ninguno'],transporte:'A Pie',ingresoEmpresa:'2025-01-10',retiroEmpresa:'',vencExamen:'',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:true,estadoSS:false,certTareas:false,cursoEspecifico:false,induccionSitio:false,fechaRevision:'',periodicidadExamen:365,accesoGeneral:false,fotografia:'',notas:'Pendiente de inducción y examen médico' },
+  { id:'w1',documento:'1002490066',nombre:'LUIS EDUARDO PEÑALOZA DE LA OSSA',cargo:'',historia:false,activo:true,habilitado:true,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'1',sede:'CONTROL PROVISIONAL LA RIVIERE ET3 T2',empleadoActivo:true,fechaExpedicion:'2005-03-10',fechaNacimiento:'1985-03-15',sexo:'M',estadoCivil:'Casado',ubicacionFisica:'Torre A Piso 3',tipoVinculacion:'Contratista',salario:'2500000',nivelEscolaridad:'Tecnico',raza:'No Aplica',correo:'',eps:'Sura EPS',direccionResidencia:'Calle 50 # 30-15',telefonoResidencia:'6017551234',telefonoMovil:'3105551234',grupoSanguineo:'O+',discapacidad:'NO',contactoEmergencias:'María Peñaloza',telefonoEmergencias:'3115559876',enfermedades:['Ninguno'],transporte:'Bus Urbano',ingresoEmpresa:'2023-01-15',retiroEmpresa:'',vencExamen:'2025-12-31',vencAlturas:'2025-06-30',vencConfinados:'',certRequeridas:['Alturas'],accesoContratista:true,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'2025-09-30',periodicidadExamen:365,accesoGeneral:true,fotografia:'',notas:'' },
+  { id:'w2',documento:'1037625656',nombre:'MELISSA LOMBANA FERRER',cargo:'PROFESIONAL SST',historia:true,activo:false,habilitado:false,parafiscales:false,certificacion:false,otrosCursos:false,induccion:false,contratistaId:'2',sede:'Salitre Centrik Town',empleadoActivo:false,fechaExpedicion:'2010-07-22',fechaNacimiento:'1990-07-22',sexo:'F',estadoCivil:'Soltera',ubicacionFisica:'Oficina SST',tipoVinculacion:'PrestacionServicios',salario:'4500000',nivelEscolaridad:'Profesional Completo',raza:'No Aplica',correo:'',eps:'Sanitas',direccionResidencia:'Carrera 15 # 85-20',telefonoResidencia:'6014441122',telefonoMovil:'3164441122',grupoSanguineo:'A+',discapacidad:'NO',contactoEmergencias:'Julio Lombana',telefonoEmergencias:'3104449911',enfermedades:['Ninguno'],transporte:'Vehiculo Individual',ingresoEmpresa:'2022-06-01',retiroEmpresa:'',vencExamen:'2025-05-31',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:false,estadoSS:false,certTareas:false,cursoEspecifico:false,induccionSitio:false,fechaRevision:'',periodicidadExamen:365,accesoGeneral:false,fotografia:'',notas:'Contrato pendiente de renovación' },
+  { id:'w3',documento:'1012403694',nombre:'DILY ZULAIDY LATORRE LUQUE',cargo:'PROFESIONAL SST',historia:false,activo:false,habilitado:false,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'2',sede:'.',empleadoActivo:false,fechaExpedicion:'2012-11-05',fechaNacimiento:'1992-11-05',sexo:'F',estadoCivil:'Soltero',ubicacionFisica:'',tipoVinculacion:'PrestacionServicios',salario:'4000000',nivelEscolaridad:'Profesional Completo',raza:'No Aplica',correo:'',eps:'Compensar',direccionResidencia:'Av 68 # 22-15',telefonoResidencia:'6013332200',telefonoMovil:'3173332200',grupoSanguineo:'B+',discapacidad:'NO',contactoEmergencias:'Rosa Luque',telefonoEmergencias:'3183339988',enfermedades:['Ninguno'],transporte:'Medio Masivo',ingresoEmpresa:'2023-03-01',retiroEmpresa:'',vencExamen:'2025-09-30',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:false,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'',periodicidadExamen:365,accesoGeneral:false,fotografia:'',notas:'' },
+  { id:'w4',documento:'1012403695',nombre:'DILY ZULAIDY LATORRE LUQUE',cargo:'PROFESIONAL CONSULTORIA',historia:false,activo:false,habilitado:true,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'2',sede:'SinAsignar - Incorrecta',empleadoActivo:true,fechaExpedicion:'2012-11-05',fechaNacimiento:'1992-11-05',sexo:'F',estadoCivil:'Soltero',ubicacionFisica:'',tipoVinculacion:'Contratista',salario:'3800000',nivelEscolaridad:'Profesional Completo',raza:'No Aplica',correo:'',eps:'Compensar',direccionResidencia:'Av 68 # 22-15',telefonoResidencia:'6013332200',telefonoMovil:'3173332200',grupoSanguineo:'B+',discapacidad:'NO',contactoEmergencias:'Rosa Luque',telefonoEmergencias:'3183339988',enfermedades:['Ninguno'],transporte:'Medio Masivo',ingresoEmpresa:'2023-08-01',retiroEmpresa:'',vencExamen:'2025-12-31',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:false,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'',periodicidadExamen:365,accesoGeneral:false,fotografia:'',notas:'' },
+  { id:'w5',documento:'8164901',nombre:'SANTIAGO MOSQUERA',cargo:'GERENTE',historia:false,activo:false,habilitado:true,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'2',sede:'SinAsignar - Incorrecta',empleadoActivo:false,fechaExpedicion:'2000-04-18',fechaNacimiento:'1978-04-18',sexo:'M',estadoCivil:'Casado',ubicacionFisica:'Gerencia',tipoVinculacion:'Empleado',salario:'8000000',nivelEscolaridad:'Especialista',raza:'No Aplica',correo:'',eps:'Salud Total',direccionResidencia:'Calle 100 # 9-43',telefonoResidencia:'6016667788',telefonoMovil:'3006667788',grupoSanguineo:'O-',discapacidad:'NO',contactoEmergencias:'Patricia Mosquera',telefonoEmergencias:'3016669900',enfermedades:['Hipertensión'],transporte:'Vehiculo Individual',ingresoEmpresa:'2020-01-01',retiroEmpresa:'',vencExamen:'2026-01-31',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:false,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'2026-01-01',periodicidadExamen:365,accesoGeneral:true,fotografia:'',notas:'' },
+  { id:'w6',documento:'1022349317',nombre:'GUSTAVO DIAZ CIFUENTES',cargo:'APOYO EN OFICIOS VARIOS',historia:false,activo:true,habilitado:true,parafiscales:false,certificacion:true,otrosCursos:true,induccion:true,contratistaId:'3',sede:'SinAsignar - Incorrecta',empleadoActivo:true,fechaExpedicion:'2015-09-12',fechaNacimiento:'1995-09-12',sexo:'M',estadoCivil:'Soltero',ubicacionFisica:'Bodega',tipoVinculacion:'Contratista',salario:'1300000',nivelEscolaridad:'Secundaria Completa',raza:'No Aplica',correo:'',eps:'Nueva EPS',direccionResidencia:'Cra 30 # 4-50',telefonoResidencia:'6014448877',telefonoMovil:'3114448877',grupoSanguineo:'A-',discapacidad:'NO',contactoEmergencias:'Carmen Cifuentes',telefonoEmergencias:'3124449966',enfermedades:['Ninguno'],transporte:'Bicicleta Particular',ingresoEmpresa:'2024-02-01',retiroEmpresa:'',vencExamen:'2025-08-31',vencAlturas:'2025-03-31',vencConfinados:'',certRequeridas:['Alturas','SeguridadVial'],accesoContratista:true,estadoSS:false,certTareas:true,cursoEspecifico:true,induccionSitio:true,fechaRevision:'2025-08-01',periodicidadExamen:365,accesoGeneral:true,fotografia:'',notas:'' },
+  { id:'w7',documento:'1045678912',nombre:'ANDREA CAROLINA MESA RESTREPO',cargo:'INSPECTOR SST',historia:true,activo:true,habilitado:true,parafiscales:true,certificacion:true,otrosCursos:false,induccion:true,contratistaId:'1',sede:'Obra Norte',empleadoActivo:true,fechaExpedicion:'2013-05-20',fechaNacimiento:'1993-05-20',sexo:'F',estadoCivil:'Union Libre',ubicacionFisica:'Campo',tipoVinculacion:'TerminoFijo',salario:'2800000',nivelEscolaridad:'Tecnologico',raza:'No Aplica',correo:'',eps:'Famisanar',direccionResidencia:'Calle 72 # 45-12',telefonoResidencia:'6018881122',telefonoMovil:'3208881122',grupoSanguineo:'B-',discapacidad:'NO',contactoEmergencias:'Luis Mesa',telefonoEmergencias:'3218889900',enfermedades:['Ninguno'],transporte:'Motocicleta',ingresoEmpresa:'2023-07-01',retiroEmpresa:'',vencExamen:'2026-07-31',vencAlturas:'2025-12-31',vencConfinados:'2025-06-30',certRequeridas:['Alturas','EspaciosConfinados','TrabajoEnCaliente'],accesoContratista:true,estadoSS:true,certTareas:true,cursoEspecifico:false,induccionSitio:true,fechaRevision:'2026-01-01',periodicidadExamen:365,accesoGeneral:true,fotografia:'',notas:'' },
+  { id:'w8',documento:'1098765432',nombre:'CAMILO ERNESTO VARGAS PINILLA',cargo:'OPERARIO',historia:false,activo:true,habilitado:false,parafiscales:false,certificacion:false,otrosCursos:false,induccion:false,contratistaId:'6',sede:'SinAsignar - Incorrecta',empleadoActivo:true,fechaExpedicion:'2018-01-30',fechaNacimiento:'1998-01-30',sexo:'M',estadoCivil:'Soltero',ubicacionFisica:'',tipoVinculacion:'ObraLabor',salario:'1160000',nivelEscolaridad:'Secundaria Incompleta',raza:'No Aplica',correo:'',eps:'Coosalud',direccionResidencia:'Transv 22 # 15-8',telefonoResidencia:'',telefonoMovil:'3001112233',grupoSanguineo:'O+',discapacidad:'NO',contactoEmergencias:'Rosa Pinilla',telefonoEmergencias:'3011119988',enfermedades:['Ninguno'],transporte:'A Pie',ingresoEmpresa:'2025-01-10',retiroEmpresa:'',vencExamen:'',vencAlturas:'',vencConfinados:'',certRequeridas:[],accesoContratista:true,estadoSS:false,certTareas:false,cursoEspecifico:false,induccionSitio:false,fechaRevision:'',periodicidadExamen:365,accesoGeneral:false,fotografia:'',notas:'Pendiente de inducción y examen médico' },
 ]
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -460,7 +463,8 @@ function certDateStatus(fecha: string): { label: string; cls: string } {
 // ─── Component ───────────────────────────────────────────────────────────────
 export default function ContratistasSST() {
   const [tab, setTab] = useState<Tab>('panel')
-  const [items, setItems] = useState<Contratista[]>(MOCK)
+  const [items, setItems] = useState<Contratista[]>([])
+  const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<Contratista | null>(null)
   const [editId, setEditId] = useState<string | null>(null)
   const [step, setStep] = useState(0)
@@ -484,7 +488,7 @@ export default function ContratistasSST() {
   const [filtroArl, setFiltroArl] = useState('')
   const [resultados, setResultados] = useState<Contratista[] | null>(null)
   // Empleados/trabajadores
-  const [trabajadores] = useState<Trabajador[]>(TRABAJADORES_MOCK)
+  const [trabajadores, setTrabajadores] = useState<Trabajador[]>([])
   const [vistaEmpleados, setVistaEmpleados] = useState(false)
   const [searchTrb, setSearchTrb] = useState('')
   const [paginaTrb, setPaginaTrb] = useState(1)
@@ -503,28 +507,170 @@ export default function ContratistasSST() {
   const [showAlturasModal, setShowAlturasModal] = useState(false)
   const [soportesUploads, setSoportesUploads] = useState<{ id: string; nombre: string; size: string; dataUrl: string }[]>([])
 
+  // ── Carga inicial desde API ──────────────────────────────────────────────────
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true)
+        const [contratistas, trabajadoresData] = await Promise.all([
+          sstContratistasApi.getAll(),
+          sstContratistasApi.getTrabajadores({ limit: 500 }),
+        ])
+        // Mapear API → tipo local (añadir campos calculados que no existen en BD)
+        const mapped = contratistas.map(c => ({
+          ...EMPTY_FORM,
+          id: c.id,
+          razonSocial: c.razonSocial,
+          representante: c.representante ?? '',
+          nombreComercial: c.nombreComercial ?? '',
+          nit: c.nit,
+          nitDigito: c.nitDigito ?? '',
+          direccion: c.direccion ?? '',
+          telefono: c.telefono ?? '',
+          email: c.email ?? '',
+          sitioWeb: c.sitioWeb ?? '',
+          tipo: c.tipo ?? '',
+          tamano: (c.tamano ?? 'Micro') as Contratista['tamano'],
+          departamento: c.departamento ?? '',
+          municipio: c.municipio ?? '',
+          actividadEconomica: c.actividadEconomica ?? '',
+          arl: c.arl ?? '',
+          nivelRiesgo: (c.nivelRiesgo ?? 'I') as Contratista['nivelRiesgo'],
+          vencimientoSS: c.vencimientoSS ?? '',
+          operadorPagoSS: c.operadorPagoSS ?? '',
+          centroEntrenamiento: c.centroEntrenamiento ?? '',
+          consultaExamenMedico: c.consultaExamenMedico,
+          ipsExamenes: c.ipsExamenes ?? '',
+          clasificacionCategoria: c.clasificacionCategoria ?? '',
+          clasificacionCuadrante: c.clasificacionCuadrante ?? '',
+          personaContacto: c.personaContacto ?? '',
+          contactoAdmin: c.contactoAdmin ?? '',
+          actividades: c.actividades ?? '',
+          costoHora: c.costoHora ?? '',
+          activo: c.activo,
+          actualizacionMasivaSS: c.actualizacionMasivaSS ?? '',
+          actualizacionMasivaCursos: c.actualizacionMasivaCursos ?? '',
+          usuario: c.usuario ?? '',
+          clave: c.clave ?? '',
+          permisosEspeciales: c.permisosEspeciales,
+          categoria1: c.categoria1 ?? '',
+          categoria2: c.categoria2 ?? '',
+          categoria3: c.categoria3 ?? '',
+          codigoSistemaExterno: c.codigoSistemaExterno ?? '',
+          estado: (c.estado ?? 'Activo') as Contratista['estado'],
+          diasCorte: c.diasCorte ?? 0,
+          totalTrabajadores: c._count?.trabajadores ?? 0,
+          trabajadoresActivos: 0,
+          trabajadoresHabilitados: 0,
+          ssAlDia: 0,
+          conCertificaciones: 0,
+          conInduccion: 0,
+          documentos: [],
+        }))
+        setItems(mapped)
+        const mappedTrb = trabajadoresData.map(t => ({
+          ...EMPTY_TRABAJADOR,
+          id: t.id,
+          documento: t.documento,
+          nombre: t.nombre,
+          cargo: t.cargo ?? '',
+          sede: t.sede ?? '',
+          historia: t.historia,
+          activo: t.activo,
+          habilitado: t.habilitado,
+          parafiscales: t.parafiscales,
+          certificacion: t.certificacion,
+          otrosCursos: t.otrosCursos,
+          induccion: t.induccion,
+          contratistaId: t.contratistaId,
+          empleadoActivo: t.empleadoActivo,
+          fechaExpedicion: t.fechaExpedicion ?? '',
+          fechaNacimiento: t.fechaNacimiento ?? '',
+          sexo: t.sexo ?? 'M',
+          estadoCivil: t.estadoCivil ?? 'Soltero',
+          ubicacionFisica: t.ubicacionFisica ?? '',
+          tipoVinculacion: t.tipoVinculacion ?? 'Contratista',
+          salario: t.salario ?? '',
+          nivelEscolaridad: t.nivelEscolaridad ?? '',
+          raza: t.raza ?? 'No Aplica',
+          correo: t.correo ?? '',
+          eps: t.eps ?? '',
+          direccionResidencia: t.direccionResidencia ?? '',
+          telefonoResidencia: t.telefonoResidencia ?? '',
+          telefonoMovil: t.telefonoMovil ?? '',
+          grupoSanguineo: t.grupoSanguineo ?? 'O+',
+          discapacidad: t.discapacidad ?? 'NO',
+          contactoEmergencias: t.contactoEmergencias ?? '',
+          telefonoEmergencias: t.telefonoEmergencias ?? '',
+          enfermedades: t.enfermedades ?? ['Ninguno'],
+          transporte: t.transporte ?? 'Bus Urbano',
+          ingresoEmpresa: t.ingresoEmpresa ?? '',
+          retiroEmpresa: t.retiroEmpresa ?? '',
+          vencExamen: t.vencExamen ?? '',
+          vencAlturas: t.vencAlturas ?? '',
+          vencConfinados: t.vencConfinados ?? '',
+          certRequeridas: t.certRequeridas ?? [],
+          accesoContratista: t.accesoContratista,
+          estadoSS: t.estadoSS,
+          certTareas: t.certTareas,
+          cursoEspecifico: t.cursoEspecifico,
+          induccionSitio: t.induccionSitio,
+          fechaRevision: t.fechaRevision ?? '',
+          periodicidadExamen: t.periodicidadExamen,
+          accesoGeneral: t.accesoGeneral,
+          fotografia: t.fotografia ?? '',
+          notas: t.notas ?? '',
+        }))
+        setTrabajadores(mappedTrb)
+      } catch {
+        toast.error('Error al cargar contratistas SST')
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
 
   function openNew() { setForm(EMPTY_FORM); setEditId(null); setStep(0); setTab('agregar') }
   function openEdit(c: Contratista) {
     const { id: _i, documentos: _d, ...rest } = c
     setForm(rest); setEditId(c.id); setStep(0); setTab('agregar')
   }
-  function handleSave() {
+  async function handleSave() {
     if (!form.nit || !form.razonSocial) { toast.error('NIT y nombre de empresa son obligatorios'); return }
-    if (editId) {
-      setItems(p => p.map(c => c.id === editId ? { ...c, ...form } : c))
-      toast.success('Contratista actualizado')
-    } else {
-      setItems(p => [...p, { id: Date.now().toString(), ...form, documentos: [] }])
-      toast.success('Contratista registrado')
+    // Excluir campos calculados locales que no existen en la BD
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { totalTrabajadores, trabajadoresActivos, trabajadoresHabilitados,
+      ssAlDia, conCertificaciones, conInduccion, ...apiForm } = form
+    try {
+      if (editId) {
+        await sstContratistasApi.update(editId, apiForm)
+        setItems(p => p.map(c => c.id === editId ? { ...c, ...form } : c))
+        toast.success('Contratista actualizado')
+      } else {
+        const created = await sstContratistasApi.create(apiForm)
+        setItems(p => [...p, {
+          ...form, id: created.id, documentos: [],
+          totalTrabajadores: 0, trabajadoresActivos: 0, trabajadoresHabilitados: 0,
+          ssAlDia: 0, conCertificaciones: 0, conInduccion: 0,
+        }])
+        toast.success('Contratista registrado')
+      }
+      setTab('panel')
+    } catch {
+      toast.error('Error al guardar contratista')
     }
-    setTab('trabajadores')
   }
-  function handleDelete(id: string) {
-    setItems(p => p.filter(c => c.id !== id))
-    setConfirmDel(null)
-    if (selected?.id === id) setSelected(null)
-    toast.success('Contratista eliminado')
+  async function handleDelete(id: string) {
+    try {
+      await sstContratistasApi.delete(id)
+      setItems(p => p.filter(c => c.id !== id))
+      setConfirmDel(null)
+      if (selected?.id === id) setSelected(null)
+      toast.success('Contratista eliminado')
+    } catch {
+      toast.error('Error al eliminar contratista')
+    }
   }
   function exportCSV(parameterized = false) {
     let data = parameterized
@@ -559,26 +705,31 @@ export default function ContratistasSST() {
     reader.readAsArrayBuffer(file)
   }
 
-  function handleGuardarNota() {
+  async function handleGuardarNota() {
     const nota = trabajadorForm.notas.trim()
     if (!nota) { toast.error('Escribe una nota antes de guardar'); return }
-    const phone = (trabajadorForm.telefonoMovil || '').replace(/\D/g, '')
     const contratista = items.find(c => c.id === trabajadorForm.contratistaId)
-    const email = contratista?.email ?? ''
-    const nombre = trabajadorForm.nombre
-    const fecha = new Date().toLocaleString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-    const msg = `📋 Nota SST [${fecha}]\nTrabajador: ${nombre}\nDoc: ${trabajadorForm.documento}\n\n${nota}`
-    if (phone) {
-      window.open(`https://wa.me/57${phone}?text=${encodeURIComponent(msg)}`, '_blank')
+    const toastId = toast.loading('Enviando notificaciones...')
+    try {
+      const result = await notificationsApi.notificarTrabajador({
+        nombre: trabajadorForm.nombre,
+        documento: trabajadorForm.documento,
+        telefono: (trabajadorForm.telefonoMovil || '').replace(/\D/g, ''),
+        correo: trabajadorForm.correo || '',
+        contratistaEmail: contratista?.email || '',
+        contratistaRazonSocial: contratista?.razonSocial || '',
+        nota,
+      })
+      toast.dismiss(toastId)
+      if (result.success) {
+        toast.success(`${result.message}`)
+      } else {
+        toast.error(`Errores: ${result.errors.join(' | ')}`)
+      }
+    } catch {
+      toast.dismiss(toastId)
+      toast.error('Error al conectar con el servidor de notificaciones')
     }
-    if (email) {
-      setTimeout(() => {
-        const subject = encodeURIComponent(`Nota SST – ${nombre} (${trabajadorForm.documento})`)
-        const body = encodeURIComponent(msg)
-        window.open(`mailto:${email}?subject=${subject}&body=${body}`)
-      }, 500)
-    }
-    toast.success(`Nota guardada${phone ? ` · WhatsApp +57${phone}` : ''}${email ? ` · Email ${email}` : ''}`)
   }
 
   function buildSoportesDocs() {
@@ -1686,6 +1837,10 @@ export default function ContratistasSST() {
                       <input className="form-input" value={trabajadorForm.telefonoMovil} onChange={e => stf('telefonoMovil', e.target.value)} />
                     </div>
                     <div>
+                      <label className="form-label">Correo electrónico</label>
+                      <input type="email" className="form-input" placeholder="trabajador@ejemplo.com" value={trabajadorForm.correo} onChange={e => stf('correo', e.target.value)} />
+                    </div>
+                    <div>
                       <label className="form-label">Condición discapacidad</label>
                       <select className="form-select" value={trabajadorForm.discapacidad} onChange={e => stf('discapacidad', e.target.value)}>
                         {DISCAPACIDADES.map(d => <option key={d}>{d}</option>)}
@@ -1887,7 +2042,18 @@ export default function ContratistasSST() {
               {/* Modal footer */}
               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between rounded-b-xl">
                 <button className="btn-secondary" onClick={() => setTrabajadorModal(null)}>Cancelar</button>
-                <button className="btn-primary" onClick={() => { toast.success('Trabajador actualizado'); setTrabajadorModal(null) }}>
+                <button className="btn-primary" onClick={async () => {
+                  if (!trabajadorModal) return
+                  try {
+                    const { id: _id, ...body } = { ...trabajadorForm, id: trabajadorModal.id }
+                    await sstContratistasApi.updateTrabajador(trabajadorModal.id, body)
+                    setTrabajadores(p => p.map(t => t.id === trabajadorModal.id ? { ...t, ...trabajadorForm } : t))
+                    toast.success('Trabajador actualizado')
+                    setTrabajadorModal(null)
+                  } catch {
+                    toast.error('Error al guardar trabajador')
+                  }
+                }}>
                   Guardar cambios
                 </button>
               </div>
@@ -2115,6 +2281,49 @@ export default function ContratistasSST() {
                   </table>
                 </div>
               </div>
+                {/* RUAF Helper */}
+                <div className="border border-blue-200 rounded-lg overflow-hidden">
+                  <div className="bg-blue-600 px-4 py-2.5 flex items-center justify-between">
+                    <div>
+                      <p className="text-white text-xs font-semibold">Consultar en RUAF — SISPRO</p>
+                      <p className="text-blue-200 text-xs">Registro Único de Afiliados al Sistema de Protección Social</p>
+                    </div>
+                    <button
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-blue-700 text-xs rounded font-semibold hover:bg-blue-50 transition"
+                      onClick={() => {
+                        navigator.clipboard.writeText(trabajadorForm.documento).catch(() => {})
+                        window.open('https://ruaf.sispro.gov.co/Filtro.aspx', '_blank')
+                        toast.success(`Número ${trabajadorForm.documento} copiado al portapapeles — Pégalo en RUAF`, { duration: 5000 })
+                      }}
+                    >
+                      Abrir RUAF
+                    </button>
+                  </div>
+                  <div className="p-4 bg-blue-50 grid grid-cols-3 gap-3">
+                    {[
+                      { label: 'Tipo de documento', value: 'Cédula de Ciudadanía' },
+                      { label: 'Número de identificación', value: trabajadorForm.documento || '—' },
+                      { label: 'Fecha de expedición', value: trabajadorForm.fechaExpedicion || '—' },
+                    ].map(f => (
+                      <div key={f.label}>
+                        <p className="text-xs text-blue-600 font-medium">{f.label}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <p className="text-xs font-bold text-gray-800">{f.value}</p>
+                          {f.value !== '—' && (
+                            <button
+                              className="text-blue-400 hover:text-blue-700 transition"
+                              title="Copiar"
+                              onClick={() => { navigator.clipboard.writeText(f.value).catch(() => {}); toast.success(`"${f.value}" copiado`) }}
+                            >
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/></svg>
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="px-4 pb-3 text-xs text-blue-500 italic">El número de identificación se copia automáticamente al abrir RUAF.</p>
+                </div>
               <div className="px-6 py-3 border-t bg-gray-50 rounded-b-xl flex justify-end shrink-0">
                 <button className="btn-secondary text-sm" onClick={() => setShowSSModal(false)}>Cerrar</button>
               </div>
@@ -2520,7 +2729,15 @@ export default function ContratistasSST() {
 
       {/* Content */}
       <div className="flex-1 p-6">
-        {RENDERS[tab]()}
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <svg className="animate-spin h-8 w-8 text-blue-600" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <span className="ml-3 text-gray-500">Cargando datos...</span>
+          </div>
+        ) : RENDERS[tab]()}
       </div>
 
       {/* Footer */}

@@ -16,8 +16,8 @@ interface MeResponse {
 }
 
 export const authApi = {
-  login: (email: string, password: string) =>
-    api.post<LoginResponse>('/auth/login', { email, password }).then((r) => r.data),
+  login: (email: string, password: string, captchaToken?: string) =>
+    api.post<LoginResponse>('/auth/login', { email, password, captchaToken }).then((r) => r.data),
 
   me: () =>
     api.get<MeResponse>('/auth/me').then((r) => r.data),

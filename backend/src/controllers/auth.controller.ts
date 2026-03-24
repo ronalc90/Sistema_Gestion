@@ -16,10 +16,10 @@ export const login = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const { email, password, captchaToken } = req.body;
     const ip = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || '';
     const userAgent = req.headers['user-agent'] || '';
-    const result = await authService.login({ email, password, ip, userAgent });
+    const result = await authService.login({ email, password, captchaToken, ip, userAgent });
 
     res.json({
       success: true,

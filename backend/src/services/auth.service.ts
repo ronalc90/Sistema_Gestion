@@ -24,6 +24,7 @@ const userSelect = {
 interface LoginInput {
   email: string;
   password: string;
+  captchaToken?: string;
   ip?: string;
   userAgent?: string;
 }
@@ -43,7 +44,28 @@ interface AuthResponse {
 /**
  * Iniciar sesión
  */
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret || !token) return true; // skip if not configured
+  try {
+    const resp = await fetch(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${secret}&response=${token}`,
+      { method: 'POST' }
+    );
+    const data = await resp.json() as { success: boolean; score?: number };
+    return data.success && (data.score ?? 1) >= 0.4;
+  } catch {
+    return true; // network error → allow through
+  }
+}
+
 export const login = async (input: LoginInput): Promise<AuthResponse> => {
+  // Verificar reCAPTCHA si se envió token
+  if (input.captchaToken) {
+    const captchaOk = await verifyRecaptcha(input.captchaToken);
+    if (!captchaOk) throw new Error('Verificación de seguridad fallida. Intente nuevamente.');
+  }
+
   // Buscar usuario por email
   const user = await prisma.user.findUnique({
     where: { email: input.email.toLowerCase() },

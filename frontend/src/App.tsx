@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { GoogleReCaptchaProvider } from 'react-google-recaptcha-v3'
 import { useAuthStore } from './stores/authStore'
 import Login from './pages/Login'
 import Layout from './components/layout/Layout'
@@ -101,7 +102,11 @@ export default function App() {
     <BrowserRouter>
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={
+          <GoogleReCaptchaProvider reCaptchaKey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}>
+            <Login />
+          </GoogleReCaptchaProvider>
+        } />
         <Route
           path="/"
           element={
