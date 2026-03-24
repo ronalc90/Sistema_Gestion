@@ -80,7 +80,8 @@
     "costCenter": "Centro de costo",
     "position": "Cargo",
     "salary": "Salario",
-    "hireDate": "Fecha de ingreso"
+    "hireDate": "Fecha de ingreso",
+    "all": "Todos"
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -120,6 +121,10 @@
     "profile": "Perfil",
     "help": "Ayuda",
     "menu": "Menú",
+    "shifts": "Turnos",
+    "novelties": "Novedades",
+    "userManagement": "Gestión de Usuarios",
+    "platformMetrics": "Métricas de Plataforma",
     "sgsstGroups": {
       "company": "Empresa y Diagnóstico",
       "admin": "Administración",
@@ -130,7 +135,21 @@
       "contractors": "Contratistas y Riesgos",
       "improvement": "Mejora continua",
       "emergencies": "Emergencias",
-      "special": "Especiales"
+      "emergencias": "Emergencias",
+      "special": "Especiales",
+      "empresa": "Empresa",
+      "planificacion": "Planificación",
+      "cumplimiento": "Cumplimiento",
+      "riesgos": "Gestión de Riesgos",
+      "talento": "Talento Humano",
+      "salud": "Salud Ocupacional",
+      "incidentes": "Incidentes y Accidentes",
+      "documentacion": "Documentación",
+      "inspecciones": "Inspecciones",
+      "contratistaSst": "Contratistas",
+      "seguridadVial": "Seguridad Vial",
+      "sistemasExternos": "Sistemas Externos",
+      "seguridad": "Seguridad"
     }
   },
   "modules": {
@@ -146,7 +165,12 @@
       "position": "Cargo",
       "quantity": "Cantidad",
       "startDate": "Fecha inicio",
-      "endDate": "Fecha fin"
+      "endDate": "Fecha fin",
+      "timeRange": "Rango de tiempo",
+      "selectContractor": "Seleccionar contratista",
+      "selectHeadquarter": "Seleccionar sede",
+      "enterPosition": "Ingrese el cargo",
+      "peopleQuantity": "Cantidad de personas"
     },
     "employees": {
       "title": "Empleados",
@@ -275,13 +299,35 @@
       "list": "Lista de sedes",
       "add": "Agregar sede",
       "edit": "Editar sede",
+      "detail": "Detalle de Sede",
+      "generalData": "Datos Generales",
       "city": "Ciudad",
       "manager": "Encargado",
       "restTime": "Tiempo de descanso",
       "collectionName": "Nombre colección",
-      "schedules": "Horarios",
+      "schedules": "Horarios de la Sede",
       "initialDate": "Fecha inicial",
-      "finalDate": "Fecha final"
+      "finalDate": "Fecha final",
+      "nameLabel": "Nombre de la Sede",
+      "statusLabel": "Estado de la Sede",
+      "tabs": {
+        "detail": "Detalle de la sede",
+        "contractors": "Contratistas asociados",
+        "departments": "Departamentos asociados",
+        "areas": "Áreas asociadas"
+      },
+      "noContractors": "No hay contratistas asociados",
+      "noDepartments": "No hay departamentos asociados",
+      "noAreas": "No hay áreas asociadas",
+      "restTimeOptions": {
+        "30min": "30 minutos",
+        "1h": "1 hora",
+        "1h30": "1 hora 30 min",
+        "2h": "2 horas"
+      },
+      "selectRestTime": "Seleccione tiempo de descanso",
+      "noCostCenter": "Sin centro de costos",
+      "collectionHint": "Acorde al nombre de la sede"
     },
     "reports": {
       "title": "Reportes",
@@ -469,7 +515,10 @@
     "minLength": "Debe tener al menos {{count}} caracteres",
     "maxLength": "No debe exceder {{count}} caracteres",
     "minValue": "El valor mínimo es {{value}}",
-    "maxValue": "El valor máximo es {{value}}"
+    "maxValue": "El valor máximo es {{value}}",
+    "dateRange": "La fecha final debe ser posterior a la fecha inicial",
+    "atLeastOneDay": "Debe activar al menos un día de la semana",
+    "fixFormErrors": "Por favor corrija los errores del formulario"
   },
   "success": {
     "saved": "Guardado exitosamente",

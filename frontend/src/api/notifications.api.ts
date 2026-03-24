@@ -12,9 +12,7 @@ export interface NotifyPayload {
 
 export interface NotifyResult {
   success: boolean
-  whatsapp: boolean
   email: boolean
-  errors: string[]
   message: string
 }
 

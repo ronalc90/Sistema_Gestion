@@ -479,6 +479,7 @@ model ContratistaSST {
   updatedAt                DateTime @updatedAt @map("updated_at")
 
   trabajadores             TrabajadorSST[]
+  soportes                 SoporteContratistaSST[]
 
   @@map("contratistas_sst")
 }
@@ -543,10 +544,34 @@ model TrabajadorSST {
   createdAt            DateTime @default(now()) @map("created_at")
   updatedAt            DateTime @updatedAt @map("updated_at")
 
-  contratistaId        String         @map("contratista_id")
-  contratista          ContratistaSST @relation(fields: [contratistaId], references: [id], onDelete: Cascade)
+  contratistaId        String                  @map("contratista_id")
+  contratista          ContratistaSST          @relation(fields: [contratistaId], references: [id], onDelete: Cascade)
+  soportes             SoporteContratistaSST[]
 
   @@map("trabajadores_sst")
+}
+
+// ==========================================
+// SGSST — SOPORTES DE CONTRATISTAS
+// ==========================================
+
+model SoporteContratistaSST {
+  id              String          @id @default(uuid())
+  nombre          String
+  tipoDocumento   String?         @map("tipo_documento")
+  descripcion     String?
+  storageKey      String          @map("storage_key")
+  mimeType        String          @map("mime_type")
+  tamanio         Int
+  creadoEn        DateTime        @default(now()) @map("creado_en")
+
+  contratistaId   String?         @map("contratista_id")
+  contratista     ContratistaSST? @relation(fields: [contratistaId], references: [id], onDelete: Cascade)
+
+  trabajadorId    String?         @map("trabajador_id")
+  trabajador      TrabajadorSST?  @relation(fields: [trabajadorId], references: [id], onDelete: Cascade)
+
+  @@map("soportes_contratistas_sst")
 }
 
 // ==========================================

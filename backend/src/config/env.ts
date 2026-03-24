@@ -15,6 +15,9 @@ interface EnvConfig {
   JWT_EXPIRES_IN: string;
   UPLOAD_DIR: string;
   MAX_FILE_SIZE: number;
+  SUPABASE_URL: string;
+  SUPABASE_SERVICE_ROLE_KEY: string;
+  SUPABASE_BUCKET: string;
 }
 
 // Validación de variables requeridas
@@ -37,6 +40,9 @@ export const env: EnvConfig = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
   UPLOAD_DIR: process.env.UPLOAD_DIR || 'uploads',
   MAX_FILE_SIZE: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10), // 10MB
+  SUPABASE_URL: process.env.SUPABASE_URL || '',
+  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  SUPABASE_BUCKET: process.env.SUPABASE_BUCKET || 'soportes-contratistas',
 };
 
 export default env;

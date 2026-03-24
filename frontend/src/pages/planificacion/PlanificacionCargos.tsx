@@ -8,6 +8,7 @@ import api from '../../api/client'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface PlanCargo {
   id: string
@@ -45,6 +46,7 @@ function formatRango(inicio: string, fin: string) {
 
 
 export default function PlanificacionCargos() {
+  const { t } = useTranslation()
   const [items, setItems] = useState<PlanCargo[]>([])
   const [contratistas, setContratistas] = useState<Contratista[]>([])
   const [sedes, setSedes] = useState<Sede[]>([])
@@ -61,11 +63,11 @@ export default function PlanificacionCargos() {
       const res = await planificacionesCargosApi.list({ limit: 200 })
       setItems(res.data.data)
     } catch {
-      toast.error('Error al cargar los registros')
+      toast.error(t('errors.generic'))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     fetchItems()
@@ -99,12 +101,12 @@ export default function PlanificacionCargos() {
 
   const validate = (): boolean => {
     const e: Partial<CargoForm> = {}
-    if (!form.contratistaId) e.contratistaId = 'Requerido'
-    if (!form.sedeId) e.sedeId = 'Requerido'
-    if (!form.cargo.trim()) e.cargo = 'Requerido'
-    if (!form.cantidad || isNaN(Number(form.cantidad))) e.cantidad = 'Requerido'
-    if (!form.fechaInicio) e.fechaInicio = 'Requerido'
-    if (!form.fechaFin) e.fechaFin = 'Requerido'
+    if (!form.contratistaId) e.contratistaId = t('errors.required')
+    if (!form.sedeId) e.sedeId = t('errors.required')
+    if (!form.cargo.trim()) e.cargo = t('errors.required')
+    if (!form.cantidad || isNaN(Number(form.cantidad))) e.cantidad = t('errors.required')
+    if (!form.fechaInicio) e.fechaInicio = t('errors.required')
+    if (!form.fechaFin) e.fechaFin = t('errors.required')
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -123,15 +125,15 @@ export default function PlanificacionCargos() {
       }
       if (modal === 'create') {
         await planificacionesCargosApi.create(payload)
-        toast.success('Registro creado exitosamente')
+        toast.success(t('success.saved'))
       } else if (selected) {
         await planificacionesCargosApi.update(selected.id, payload)
-        toast.success('Registro actualizado exitosamente')
+        toast.success(t('success.updated'))
       }
       setModal(null)
       fetchItems()
     } catch {
-      toast.error('Error al guardar el registro')
+      toast.error(t('errors.generic'))
     }
   }
 
@@ -139,12 +141,12 @@ export default function PlanificacionCargos() {
     if (!selected) return
     try {
       await planificacionesCargosApi.remove(selected.id)
-      toast.success('Registro eliminado exitosamente')
+      toast.success(t('success.deleted'))
       setConfirm(false)
       setSelected(null)
       fetchItems()
     } catch {
-      toast.error('Error al eliminar el registro')
+      toast.error(t('errors.generic'))
     }
   }
 
@@ -157,11 +159,11 @@ export default function PlanificacionCargos() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Lista de Planificación Cargos"
+        title={t('modules.planning.positionPlanning')}
         breadcrumbs={[
-          { label: 'Planificación' },
-          { label: 'Cargos', path: '/planificacion/cargos' },
-          { label: 'Lista de Planificación Cargos' },
+          { label: t('navigation.planning') },
+          { label: t('modules.planning.positions'), path: '/planificacion/cargos' },
+          { label: t('modules.planning.positionPlanning') },
         ]}
       />
 
@@ -169,7 +171,7 @@ export default function PlanificacionCargos() {
         <input
           type="text"
           className="form-input w-64"
-          placeholder="Buscar Registros"
+          placeholder={t('common.search') + '...'}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -177,7 +179,7 @@ export default function PlanificacionCargos() {
           className="btn-primary whitespace-nowrap"
           onClick={() => { setSelected(null); setModal('create') }}
         >
-          Agregar Planificación Cargos
+          {t('modules.planning.addPlanning')}
         </button>
       </div>
 
@@ -186,22 +188,22 @@ export default function PlanificacionCargos() {
           <thead>
             <tr className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                Contratista
+                {t('common.contractor')}
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                Sede
+                {t('common.headquarter')}
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                Cargo
+                {t('common.position')}
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide w-24">
-                Cantidad
+                {t('modules.planning.quantity')}
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-                Rango de tiempo
+                {t('modules.planning.timeRange')}
               </th>
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide w-24">
-                Acción
+                {t('common.actions')}
               </th>
             </tr>
           </thead>
@@ -214,7 +216,7 @@ export default function PlanificacionCargos() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
-                    Cargando...
+                    {t('common.loading')}
                   </div>
                 </td>
               </tr>
@@ -222,7 +224,7 @@ export default function PlanificacionCargos() {
             {!loading && filtered.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-10 text-center text-sm text-gray-400">
-                  {search ? 'No se encontraron registros' : 'No hay planificaciones registradas'}
+                  {t('common.noResults')}
                 </td>
               </tr>
             )}
@@ -245,51 +247,51 @@ export default function PlanificacionCargos() {
         </table>
       </div>
 
-      {/* Modal crear / editar */}
+      {/* Create / Edit Modal */}
       <Modal
         isOpen={modal !== null}
         onClose={() => setModal(null)}
-        title={modal === 'create' ? 'Agregar Planificación Cargos' : 'Editar Planificación Cargos'}
+        title={modal === 'create' ? t('modules.planning.addPlanning') : t('modules.planning.editPlanning')}
         size="md"
         footer={
           <>
-            <button className="btn-secondary" onClick={() => setModal(null)}>Cancelar</button>
-            <button className="btn-primary" form="plan-form">Guardar</button>
+            <button className="btn-secondary" onClick={() => setModal(null)}>{t('common.cancel')}</button>
+            <button className="btn-primary" form="plan-form">{t('common.save')}</button>
           </>
         }
       >
         <form id="plan-form" onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="form-label">Contratista <span className="text-red-500">*</span></label>
+            <label className="form-label">{t('common.contractor')} <span className="text-red-500">*</span></label>
             <select
               className={`form-select ${errors.contratistaId ? 'border-red-400' : ''}`}
               value={form.contratistaId}
               onChange={(e) => set('contratistaId', e.target.value)}
             >
-              <option value="">Seleccionar contratista</option>
+              <option value="">{t('modules.planning.selectContractor')}</option>
               {contratistas.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
             </select>
             {errors.contratistaId && <p className="text-xs text-red-500 mt-1">{errors.contratistaId}</p>}
           </div>
 
           <div>
-            <label className="form-label">Sede <span className="text-red-500">*</span></label>
+            <label className="form-label">{t('common.headquarter')} <span className="text-red-500">*</span></label>
             <select
               className={`form-select ${errors.sedeId ? 'border-red-400' : ''}`}
               value={form.sedeId}
               onChange={(e) => set('sedeId', e.target.value)}
             >
-              <option value="">Seleccionar sede</option>
+              <option value="">{t('modules.planning.selectHeadquarter')}</option>
               {sedes.map((s) => <option key={s.id} value={s.id}>{s.nombre}</option>)}
             </select>
             {errors.sedeId && <p className="text-xs text-red-500 mt-1">{errors.sedeId}</p>}
           </div>
 
           <div>
-            <label className="form-label">Cargo <span className="text-red-500">*</span></label>
+            <label className="form-label">{t('common.position')} <span className="text-red-500">*</span></label>
             <input
               className={`form-input ${errors.cargo ? 'border-red-400' : ''}`}
-              placeholder="Ingrese el cargo"
+              placeholder={t('modules.planning.enterPosition')}
               value={form.cargo}
               onChange={(e) => set('cargo', e.target.value)}
             />
@@ -297,12 +299,12 @@ export default function PlanificacionCargos() {
           </div>
 
           <div>
-            <label className="form-label">Cantidad <span className="text-red-500">*</span></label>
+            <label className="form-label">{t('modules.planning.quantity')} <span className="text-red-500">*</span></label>
             <input
               type="number"
               min="1"
               className={`form-input ${errors.cantidad ? 'border-red-400' : ''}`}
-              placeholder="Cantidad de personas"
+              placeholder={t('modules.planning.peopleQuantity')}
               value={form.cantidad}
               onChange={(e) => set('cantidad', e.target.value)}
             />
@@ -311,7 +313,7 @@ export default function PlanificacionCargos() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Fecha inicio <span className="text-red-500">*</span></label>
+              <label className="form-label">{t('modules.planning.startDate')} <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 className={`form-input ${errors.fechaInicio ? 'border-red-400' : ''}`}
@@ -321,7 +323,7 @@ export default function PlanificacionCargos() {
               {errors.fechaInicio && <p className="text-xs text-red-500 mt-1">{errors.fechaInicio}</p>}
             </div>
             <div>
-              <label className="form-label">Fecha fin <span className="text-red-500">*</span></label>
+              <label className="form-label">{t('modules.planning.endDate')} <span className="text-red-500">*</span></label>
               <input
                 type="date"
                 className={`form-input ${errors.fechaFin ? 'border-red-400' : ''}`}
@@ -338,8 +340,7 @@ export default function PlanificacionCargos() {
         isOpen={confirm}
         onClose={() => setConfirm(false)}
         onConfirm={handleDelete}
-        title="Confirmar eliminación"
-        message={`¿Está seguro que desea eliminar el cargo "${selected?.cargo ?? ''}" del contratista "${selected?.contratista?.nombre ?? ''}"?`}
+        message={t('common.confirmDeleteItem', { name: selected?.cargo ?? '' })}
       />
     </div>
   )

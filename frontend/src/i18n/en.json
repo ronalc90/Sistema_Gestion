@@ -80,7 +80,8 @@
     "costCenter": "Cost Center",
     "position": "Position",
     "salary": "Salary",
-    "hireDate": "Hire date"
+    "hireDate": "Hire date",
+    "all": "All"
   },
   "auth": {
     "login": "Sign in",
@@ -120,6 +121,10 @@
     "profile": "Profile",
     "help": "Help",
     "menu": "Menu",
+    "shifts": "Shifts",
+    "novelties": "Novelties",
+    "userManagement": "User Management",
+    "platformMetrics": "Platform Metrics",
     "sgsstGroups": {
       "company": "Company & Diagnosis",
       "admin": "Administration",
@@ -130,7 +135,21 @@
       "contractors": "Contractors & Risks",
       "improvement": "Continuous Improvement",
       "emergencies": "Emergencies",
-      "special": "Special"
+      "emergencias": "Emergencies",
+      "special": "Special",
+      "empresa": "Company",
+      "planificacion": "Planning",
+      "cumplimiento": "Compliance",
+      "riesgos": "Risk Management",
+      "talento": "Human Resources",
+      "salud": "Occupational Health",
+      "incidentes": "Incidents & Accidents",
+      "documentacion": "Documentation",
+      "inspecciones": "Inspections",
+      "contratistaSst": "Contractors",
+      "seguridadVial": "Road Safety",
+      "sistemasExternos": "External Systems",
+      "seguridad": "Security"
     }
   },
   "modules": {
@@ -146,7 +165,12 @@
       "position": "Position",
       "quantity": "Quantity",
       "startDate": "Start date",
-      "endDate": "End date"
+      "endDate": "End date",
+      "timeRange": "Time Range",
+      "selectContractor": "Select contractor",
+      "selectHeadquarter": "Select headquarter",
+      "enterPosition": "Enter position",
+      "peopleQuantity": "Number of people"
     },
     "employees": {
       "title": "Employees",
@@ -275,13 +299,35 @@
       "list": "Headquarters list",
       "add": "Add headquarter",
       "edit": "Edit headquarter",
+      "detail": "Headquarter Details",
+      "generalData": "General Data",
       "city": "City",
       "manager": "Manager",
       "restTime": "Rest time",
       "collectionName": "Collection name",
-      "schedules": "Schedules",
+      "schedules": "Headquarter Schedules",
       "initialDate": "Initial date",
-      "finalDate": "End date"
+      "finalDate": "End date",
+      "nameLabel": "Headquarter Name",
+      "statusLabel": "Headquarter Status",
+      "tabs": {
+        "detail": "Headquarter Detail",
+        "contractors": "Associated Contractors",
+        "departments": "Associated Departments",
+        "areas": "Associated Areas"
+      },
+      "noContractors": "No associated contractors",
+      "noDepartments": "No associated departments",
+      "noAreas": "No associated areas",
+      "restTimeOptions": {
+        "30min": "30 minutes",
+        "1h": "1 hour",
+        "1h30": "1 hour 30 min",
+        "2h": "2 hours"
+      },
+      "selectRestTime": "Select rest time",
+      "noCostCenter": "No cost center",
+      "collectionHint": "According to the headquarters name"
     },
     "reports": {
       "title": "Reports",
@@ -469,7 +515,10 @@
     "minLength": "Must be at least {{count}} characters",
     "maxLength": "Must not exceed {{count}} characters",
     "minValue": "Minimum value is {{value}}",
-    "maxValue": "Maximum value is {{value}}"
+    "maxValue": "Maximum value is {{value}}",
+    "dateRange": "End date must be after start date",
+    "atLeastOneDay": "You must activate at least one day of the week",
+    "fixFormErrors": "Please fix the form errors"
   },
   "success": {
     "saved": "Saved successfully",

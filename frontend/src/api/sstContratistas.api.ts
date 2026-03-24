@@ -97,6 +97,18 @@ export interface TrabajadorSST {
   notas?: string
 }
 
+export interface SoporteContratistaSST {
+  id: string
+  nombre: string
+  tipoDocumento?: string
+  descripcion?: string
+  storageKey: string
+  mimeType: string
+  tamanio: number
+  creadoEn: string
+  contratistaId: string
+}
+
 type ContratistaInput = Omit<ContratistaSST, 'id' | '_count'>
 type TrabajadorInput = Omit<TrabajadorSST, 'id'>
 
@@ -132,4 +144,38 @@ export const sstContratistasApi = {
 
   deleteTrabajador: (id: string) =>
     api.delete(`/sst/contratistas/trabajadores/${id}`).then(r => r.data),
+
+  // ── Soportes ──
+  getSoportes: (contratistaId: string) =>
+    api.get<{ success: boolean; data: SoporteContratistaSST[] }>(`/sst/contratistas/${contratistaId}/soportes`).then(r => r.data.data),
+
+  uploadSoporte: (contratistaId: string, file: File, tipoDocumento?: string, descripcion?: string) => {
+    const form = new FormData();
+    form.append('archivo', file);
+    if (tipoDocumento) form.append('tipoDocumento', tipoDocumento);
+    if (descripcion) form.append('descripcion', descripcion);
+    return api.post<{ success: boolean; data: SoporteContratistaSST }>(`/sst/contratistas/${contratistaId}/soportes`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data.data);
+  },
+
+  getSoporteUrl: (soporteId: string) =>
+    api.get<{ success: boolean; data: { url: string; expiresIn: number } }>(`/sst/contratistas/soportes/${soporteId}/url`).then(r => r.data.data),
+
+  deleteSoporte: (soporteId: string) =>
+    api.delete(`/sst/contratistas/soportes/${soporteId}`).then(r => r.data),
+
+  // ── Soportes de trabajador ──
+  getSoportesTrabajador: (trabajadorId: string) =>
+    api.get<{ success: boolean; data: SoporteContratistaSST[] }>(`/sst/contratistas/trabajadores/${trabajadorId}/soportes`).then(r => r.data.data),
+
+  uploadSoporteTrabajador: (trabajadorId: string, file: File, tipoDocumento?: string, descripcion?: string) => {
+    const form = new FormData();
+    form.append('archivo', file);
+    if (tipoDocumento) form.append('tipoDocumento', tipoDocumento);
+    if (descripcion) form.append('descripcion', descripcion);
+    return api.post<{ success: boolean; data: SoporteContratistaSST }>(`/sst/contratistas/trabajadores/${trabajadorId}/soportes`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data.data);
+  },
 };

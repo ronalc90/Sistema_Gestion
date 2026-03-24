@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa'
 import toast from 'react-hot-toast'
 import { notificationsApi } from '../../api/notifications.api'
-import { sstContratistasApi } from '../../api/sstContratistas.api'
+import { sstContratistasApi, type SoporteContratistaSST } from '../../api/sstContratistas.api'
 import * as XLSX from 'xlsx'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend)
@@ -505,7 +505,109 @@ export default function ContratistasSST() {
   const [showSoportesModal, setShowSoportesModal] = useState(false)
   const [showSSModal, setShowSSModal] = useState(false)
   const [showAlturasModal, setShowAlturasModal] = useState(false)
-  const [soportesUploads, setSoportesUploads] = useState<{ id: string; nombre: string; size: string; dataUrl: string }[]>([])
+  const [soportesTrabajador, setSoportesTrabajador] = useState<SoporteContratistaSST[]>([])
+  const [soportesTrabajadorLoading, setSoportesTrabajadorLoading] = useState(false)
+  const [soportesTrabajadorUploading, setSoportesTrabajadorUploading] = useState(false)
+
+  // ── Soportes de contratista (Supabase Storage) ───────────────────────────────
+  const [showContratistaSoportes, setShowContratistaSoportes] = useState(false)
+  const [soportesContratista, setSoportesContratista] = useState<SoporteContratistaSST[]>([])
+  const [soportesLoading, setSoportesLoading] = useState(false)
+  const [soporteUploading, setSoporteUploading] = useState(false)
+  const [selectedContratistaSoportes, setSelectedContratistaSoportes] = useState<Contratista | null>(null)
+  const soporteFileRef = useRef<HTMLInputElement>(null)
+  const [soporteTipo, setSoporteTipo] = useState('')
+  const [soporteDesc, setSoporteDesc] = useState('')
+  const [previewSoporte, setPreviewSoporte] = useState<{ url: string; nombre: string; mimeType: string } | null>(null)
+
+  async function openContratistaSoportes(c: Contratista) {
+    setSelectedContratistaSoportes(c)
+    setShowContratistaSoportes(true)
+    setSoportesLoading(true)
+    try {
+      const data = await sstContratistasApi.getSoportes(c.id)
+      setSoportesContratista(data)
+    } catch {
+      toast.error('Error al cargar soportes')
+    } finally {
+      setSoportesLoading(false)
+    }
+  }
+
+  async function handleSoporteUpload(file: File) {
+    if (!selectedContratistaSoportes) return
+    setSoporteUploading(true)
+    try {
+      const nuevo = await sstContratistasApi.uploadSoporte(selectedContratistaSoportes.id, file, soporteTipo || undefined, soporteDesc || undefined)
+      setSoportesContratista(p => [nuevo, ...p])
+      setSoporteTipo('')
+      setSoporteDesc('')
+      toast.success(`"${file.name}" subido correctamente`)
+    } catch {
+      toast.error('Error al subir el archivo')
+    } finally {
+      setSoporteUploading(false)
+    }
+  }
+
+  async function handleVerSoporte(soporteId: string, mimeType: string, nombre: string) {
+    try {
+      const { url } = await sstContratistasApi.getSoporteUrl(soporteId)
+      setPreviewSoporte({ url, mimeType, nombre })
+    } catch {
+      toast.error('No se pudo generar el enlace de visualización')
+    }
+  }
+
+  async function handleDeleteSoporte(soporteId: string, nombre: string) {
+    if (!confirm(`¿Eliminar el soporte "${nombre}"?`)) return
+    try {
+      await sstContratistasApi.deleteSoporte(soporteId)
+      setSoportesContratista(p => p.filter(s => s.id !== soporteId))
+      toast.success('Soporte eliminado')
+    } catch {
+      toast.error('Error al eliminar el soporte')
+    }
+  }
+
+  async function openSoportesTrabajador() {
+    if (!trabajadorModal) return
+    setShowSoportesModal(true)
+    setSoportesTrabajadorLoading(true)
+    try {
+      const data = await sstContratistasApi.getSoportesTrabajador(trabajadorModal.id)
+      setSoportesTrabajador(data)
+    } catch {
+      toast.error('Error al cargar soportes')
+    } finally {
+      setSoportesTrabajadorLoading(false)
+    }
+  }
+
+  async function handleUploadSoporteTrabajador(file: File) {
+    if (!trabajadorModal) return
+    setSoportesTrabajadorUploading(true)
+    try {
+      const nuevo = await sstContratistasApi.uploadSoporteTrabajador(trabajadorModal.id, file)
+      setSoportesTrabajador(p => [nuevo, ...p])
+      toast.success(`"${file.name}" subido correctamente`)
+    } catch {
+      toast.error('Error al subir el soporte')
+    } finally {
+      setSoportesTrabajadorUploading(false)
+    }
+  }
+
+  async function handleDeleteSoporteTrabajador(soporteId: string, nombre: string) {
+    if (!confirm(`¿Eliminar "${nombre}"?`)) return
+    try {
+      await sstContratistasApi.deleteSoporte(soporteId)
+      setSoportesTrabajador(p => p.filter(s => s.id !== soporteId))
+      toast.success('Soporte eliminado')
+    } catch {
+      toast.error('Error al eliminar el soporte')
+    }
+  }
 
   // ── Carga inicial desde API ──────────────────────────────────────────────────
   useEffect(() => {
@@ -709,7 +811,7 @@ export default function ContratistasSST() {
     const nota = trabajadorForm.notas.trim()
     if (!nota) { toast.error('Escribe una nota antes de guardar'); return }
     const contratista = items.find(c => c.id === trabajadorForm.contratistaId)
-    const toastId = toast.loading('Enviando notificaciones...')
+    const toastId = toast.loading('Enviando correo...')
     try {
       const result = await notificationsApi.notificarTrabajador({
         nombre: trabajadorForm.nombre,
@@ -722,9 +824,9 @@ export default function ContratistasSST() {
       })
       toast.dismiss(toastId)
       if (result.success) {
-        toast.success(`${result.message}`)
+        toast.success(result.message)
       } else {
-        toast.error(`Errores: ${result.errors.join(' | ')}`)
+        toast.error(result.message)
       }
     } catch {
       toast.dismiss(toastId)
@@ -1535,6 +1637,9 @@ export default function ContratistasSST() {
                                   <button className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-gray-50 text-gray-700" onClick={() => openEdit(c)}>
                                     <FaEdit className="text-yellow-500" /> Editar
                                   </button>
+                                  <button className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-sky-50 text-sky-700" onClick={() => openContratistaSoportes(c)}>
+                                    <FaFile className="text-sky-500" /> Soportes
+                                  </button>
                                   <button className="flex items-center gap-2 w-full px-3 py-2 text-xs hover:bg-gray-50 text-gray-700">
                                     <FaShieldAlt className="text-green-500" /> Evaluar
                                   </button>
@@ -1706,7 +1811,7 @@ export default function ContratistasSST() {
 
         {/* ── Trabajador Modal ── */}
         {trabajadorModal && (
-          <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-8 pb-4 overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-8 pb-4 overflow-y-auto" style={{ margin: 0 }}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl mx-4">
               {/* Modal header */}
               <div className="flex items-center justify-between px-6 py-4 bg-blue-800 rounded-t-xl">
@@ -1988,7 +2093,7 @@ export default function ContratistasSST() {
                         </button>
                         <button
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white text-xs rounded-md font-medium transition"
-                          onClick={() => setShowSoportesModal(true)}
+                          onClick={openSoportesTrabajador}
                         >
                           <FaFile /> Ver soportes
                         </button>
@@ -2010,7 +2115,7 @@ export default function ContratistasSST() {
                       <label className="form-label">Notas / Observaciones</label>
                       <textarea className="form-input" rows={4} value={trabajadorForm.notas} onChange={e => stf('notas', e.target.value)} placeholder="Observaciones, motivos de bloqueo, etc." />
                       <div className="flex items-center justify-between mt-2 gap-3">
-                        <p className="text-xs text-gray-400">Al guardar, se notificará vía WhatsApp al trabajador y por email al contratista.</p>
+                        <p className="text-xs text-gray-400">Al guardar, se enviará un correo al trabajador y al contratista.</p>
                         <button
                           className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded-md font-medium transition shrink-0"
                           onClick={handleGuardarNota}
@@ -2063,7 +2168,7 @@ export default function ContratistasSST() {
 
         {/* ── Sub-modal: Certificaciones ── */}
         {showCertModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4" style={{ margin: 0 }}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
               <div className="flex items-center justify-between px-6 py-4 bg-yellow-500 rounded-t-xl shrink-0">
                 <div className="flex items-center gap-2 text-white">
@@ -2126,7 +2231,7 @@ export default function ContratistasSST() {
 
         {/* ── Sub-modal: Soportes (gestor documental) ── */}
         {showSoportesModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4" style={{ margin: 0 }}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
               <div className="flex items-center justify-between px-6 py-4 bg-sky-500 rounded-t-xl shrink-0">
                 <div className="flex items-center gap-2 text-white">
@@ -2138,70 +2243,198 @@ export default function ContratistasSST() {
                 </div>
                 <button onClick={() => setShowSoportesModal(false)} className="text-white hover:text-sky-200"><FaTimes /></button>
               </div>
-              <div className="overflow-y-auto p-6 flex-1">
-                <label className="flex items-center gap-2 px-3 py-2 bg-sky-50 border border-sky-200 rounded-lg cursor-pointer hover:bg-sky-100 transition w-fit mb-4">
+              <div className="overflow-y-auto p-5 flex-1 space-y-4">
+                <label className={`flex items-center gap-2 px-3 py-2 bg-sky-50 border border-sky-200 rounded-lg cursor-pointer hover:bg-sky-100 transition w-fit ${soportesTrabajadorUploading ? 'opacity-60 pointer-events-none' : ''}`}>
                   <FaUpload className="text-sky-600 text-sm" />
-                  <span className="text-xs text-sky-700 font-medium">Subir nuevo soporte</span>
-                  <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                    onChange={e => {
-                      const file = e.target.files?.[0]
-                      if (!file) return
-                      const reader = new FileReader()
-                      reader.onload = ev => {
-                        setSoportesUploads(p => [...p, { id: Date.now().toString(), nombre: file.name, size: (file.size / 1024).toFixed(1) + ' KB', dataUrl: ev.target?.result as string }])
-                        toast.success(`Soporte "${file.name}" cargado`)
-                      }
-                      reader.readAsDataURL(file)
-                    }}
+                  <span className="text-xs text-sky-700 font-medium">{soportesTrabajadorUploading ? 'Subiendo...' : 'Subir nuevo soporte'}</span>
+                  <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                    onChange={e => { const f = e.target.files?.[0]; if (f) { handleUploadSoporteTrabajador(f); e.target.value = '' } }}
                   />
                 </label>
-                <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200">
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Documento</th>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Vencimiento</th>
-                      <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Estado</th>
-                      <th className="px-4 py-2.5 text-center text-xs font-semibold text-gray-600">Acción</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-100">
-                    {buildSoportesDocs().map(doc => {
-                      const s = certDateStatus(doc.vencimiento === '—' ? '' : doc.vencimiento)
-                      return (
-                        <tr key={doc.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-2.5 text-xs text-gray-800 font-medium">
-                            <div className="flex items-center gap-2"><FaFile className="text-red-400 shrink-0" />{doc.nombre}</div>
+                {soportesTrabajadorLoading ? (
+                  <div className="text-center py-8 text-sm text-gray-400">Cargando soportes...</div>
+                ) : soportesTrabajador.length === 0 ? (
+                  <div className="text-center py-10 text-sm text-gray-400">
+                    <FaFile className="mx-auto text-3xl text-gray-200 mb-2" />
+                    No hay soportes subidos para este trabajador
+                  </div>
+                ) : (
+                  <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                    <thead>
+                      <tr className="bg-gray-50 border-b border-gray-200">
+                        <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Archivo</th>
+                        <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Tipo</th>
+                        <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Fecha</th>
+                        <th className="px-4 py-2.5 text-center text-xs font-semibold text-gray-600">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {soportesTrabajador.map(s => (
+                        <tr key={s.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-2.5 text-xs text-gray-800">
+                            <div className="flex items-center gap-2">
+                              <FaFile className="text-sky-400 shrink-0" />
+                              <span className="truncate max-w-[160px]" title={s.nombre}>{s.nombre}</span>
+                              <span className="text-gray-400">({(s.tamanio / 1024).toFixed(1)} KB)</span>
+                            </div>
+                            {s.descripcion && <p className="text-gray-400 mt-0.5 pl-5">{s.descripcion}</p>}
                           </td>
-                          <td className="px-4 py-2.5 text-xs text-gray-600">{doc.vencimiento}</td>
-                          <td className="px-4 py-2.5">
-                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${s.cls}`}>{doc.estado}</span>
-                          </td>
+                          <td className="px-4 py-2.5 text-xs text-gray-600">{s.tipoDocumento || '—'}</td>
+                          <td className="px-4 py-2.5 text-xs text-gray-500">{new Date(s.creadoEn).toLocaleDateString('es-CO')}</td>
                           <td className="px-4 py-2.5 text-center">
-                            <button className="text-xs text-sky-600 hover:text-sky-800 font-medium" onClick={() => toast.success(`Abriendo ${doc.nombre}...`)}>Ver</button>
+                            <div className="flex items-center justify-center gap-3">
+                              <button className="text-xs text-sky-600 hover:text-sky-800 font-medium" onClick={() => handleVerSoporte(s.id, s.mimeType, s.nombre)}>Ver</button>
+                              <button className="text-xs text-red-500 hover:text-red-700" onClick={() => handleDeleteSoporteTrabajador(s.id, s.nombre)}>Eliminar</button>
+                            </div>
                           </td>
                         </tr>
-                      )
-                    })}
-                    {soportesUploads.map(up => (
-                      <tr key={up.id} className="hover:bg-gray-50 bg-green-50">
-                        <td className="px-4 py-2.5 text-xs text-gray-800 font-medium">
-                          <div className="flex items-center gap-2"><FaFile className="text-green-500 shrink-0" />{up.nombre} <span className="text-gray-400">({up.size})</span></div>
-                        </td>
-                        <td className="px-4 py-2.5 text-xs text-gray-600">—</td>
-                        <td className="px-4 py-2.5">
-                          <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Cargado</span>
-                        </td>
-                        <td className="px-4 py-2.5 text-center flex items-center justify-center gap-3">
-                          <a href={up.dataUrl} download={up.nombre} className="text-xs text-sky-600 hover:text-sky-800 font-medium">Descargar</a>
-                          <button className="text-xs text-red-500 hover:text-red-700" onClick={() => setSoportesUploads(p => p.filter(x => x.id !== up.id))}>Eliminar</button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
-              <div className="px-6 py-3 border-t bg-gray-50 rounded-b-xl flex justify-end shrink-0">
+              <div className="px-6 py-3 border-t bg-gray-50 rounded-b-xl flex justify-between items-center shrink-0">
+                <span className="text-xs text-gray-400">{soportesTrabajador.length} soporte{soportesTrabajador.length !== 1 ? 's' : ''}</span>
                 <button className="btn-secondary text-sm" onClick={() => setShowSoportesModal(false)}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Modal: Soportes de Contratista (Supabase Storage) ── */}
+        {showContratistaSoportes && selectedContratistaSoportes && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4" style={{ margin: 0 }}>
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+              <div className="flex items-center justify-between px-6 py-4 bg-sky-600 rounded-t-xl shrink-0">
+                <div className="flex items-center gap-2 text-white">
+                  <FaFile />
+                  <div>
+                    <h3 className="font-bold text-sm">Soportes Documentales</h3>
+                    <p className="text-sky-100 text-xs">{selectedContratistaSoportes.razonSocial} · NIT {selectedContratistaSoportes.nit}</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowContratistaSoportes(false)} className="text-white hover:text-sky-200"><FaTimes /></button>
+              </div>
+
+              <div className="overflow-y-auto p-5 flex-1 space-y-4">
+                {/* Upload area */}
+                <div className="border border-dashed border-sky-300 rounded-lg p-4 bg-sky-50 space-y-3">
+                  <p className="text-xs font-semibold text-sky-700">Subir nuevo soporte</p>
+                  <div className="flex flex-wrap gap-2">
+                    <input
+                      type="text" placeholder="Tipo de documento (ej: Contrato, RUT...)"
+                      value={soporteTipo} onChange={e => setSoporteTipo(e.target.value)}
+                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs flex-1 min-w-40 focus:outline-none focus:ring-1 focus:ring-sky-400"
+                    />
+                    <input
+                      type="text" placeholder="Descripción (opcional)"
+                      value={soporteDesc} onChange={e => setSoporteDesc(e.target.value)}
+                      className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs flex-1 min-w-40 focus:outline-none focus:ring-1 focus:ring-sky-400"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className={`flex items-center gap-2 px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-medium rounded-lg cursor-pointer transition ${soporteUploading ? 'opacity-60 pointer-events-none' : ''}`}>
+                      <FaUpload className="text-xs" />
+                      {soporteUploading ? 'Subiendo...' : 'Seleccionar archivo'}
+                      <input
+                        ref={soporteFileRef}
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                        onChange={e => { const f = e.target.files?.[0]; if (f) { handleSoporteUpload(f); e.target.value = '' } }}
+                      />
+                    </label>
+                    <span className="text-xs text-gray-400">PDF, Word, Excel, imágenes · máx 20MB</span>
+                  </div>
+                </div>
+
+                {/* List */}
+                {soportesLoading ? (
+                  <div className="text-center py-6 text-sm text-gray-400">Cargando soportes...</div>
+                ) : soportesContratista.length === 0 ? (
+                  <div className="text-center py-8 text-sm text-gray-400">
+                    <FaFile className="mx-auto text-3xl text-gray-200 mb-2" />
+                    No hay soportes subidos para este contratista
+                  </div>
+                ) : (
+                  <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                    <thead>
+                      <tr className="bg-gray-50 border-b border-gray-200">
+                        <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Archivo</th>
+                        <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Tipo</th>
+                        <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600">Fecha</th>
+                        <th className="px-4 py-2.5 text-center text-xs font-semibold text-gray-600">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {soportesContratista.map(s => (
+                        <tr key={s.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-2.5 text-xs text-gray-800">
+                            <div className="flex items-center gap-2">
+                              <FaFile className="text-sky-400 shrink-0" />
+                              <span className="truncate max-w-[180px]" title={s.nombre}>{s.nombre}</span>
+                              <span className="text-gray-400">({(s.tamanio / 1024).toFixed(1)} KB)</span>
+                            </div>
+                            {s.descripcion && <p className="text-gray-400 mt-0.5 pl-5">{s.descripcion}</p>}
+                          </td>
+                          <td className="px-4 py-2.5 text-xs text-gray-600">{s.tipoDocumento || '—'}</td>
+                          <td className="px-4 py-2.5 text-xs text-gray-500">{new Date(s.creadoEn).toLocaleDateString('es-CO')}</td>
+                          <td className="px-4 py-2.5 text-center">
+                            <div className="flex items-center justify-center gap-3">
+                              <button className="text-xs text-sky-600 hover:text-sky-800 font-medium" onClick={() => handleVerSoporte(s.id, s.mimeType, s.nombre)}>Ver</button>
+                              <button className="text-xs text-red-500 hover:text-red-700" onClick={() => handleDeleteSoporte(s.id, s.nombre)}>Eliminar</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+
+              <div className="px-6 py-3 border-t bg-gray-50 rounded-b-xl flex justify-between items-center shrink-0">
+                <span className="text-xs text-gray-400">{soportesContratista.length} soporte{soportesContratista.length !== 1 ? 's' : ''}</span>
+                <button className="btn-secondary text-sm" onClick={() => setShowContratistaSoportes(false)}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Visor de soporte ── */}
+        {previewSoporte && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4" style={{ margin: 0 }}>
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl flex flex-col" style={{ height: '90vh' }}>
+              <div className="flex items-center justify-between px-5 py-3 bg-gray-800 rounded-t-xl shrink-0">
+                <span className="text-white text-sm font-medium truncate max-w-[70%]">{previewSoporte.nombre}</span>
+                <div className="flex items-center gap-4">
+                  <a href={previewSoporte.url} target="_blank" rel="noreferrer" className="text-sky-300 hover:text-sky-100 text-xs font-medium">
+                    Descargar
+                  </a>
+                  <button onClick={() => setPreviewSoporte(null)} className="text-white hover:text-gray-300">
+                    <FaTimes />
+                  </button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-hidden rounded-b-xl">
+                {previewSoporte.mimeType === 'application/pdf' ? (
+                  <iframe
+                    src={previewSoporte.url}
+                    title={previewSoporte.nombre}
+                    className="w-full h-full"
+                  />
+                ) : previewSoporte.mimeType.startsWith('image/') ? (
+                  <div className="flex items-center justify-center h-full bg-gray-100 overflow-auto p-4">
+                    <img src={previewSoporte.url} alt={previewSoporte.nombre} className="max-w-full max-h-full object-contain" />
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-500">
+                    <FaFile className="text-5xl text-gray-300" />
+                    <p className="text-sm">Este tipo de archivo no puede previsualizarse en el navegador.</p>
+                    <a href={previewSoporte.url} target="_blank" rel="noreferrer" className="btn-primary text-sm">
+                      Descargar archivo
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -2209,7 +2442,7 @@ export default function ContratistasSST() {
 
         {/* ── Sub-modal: Estado General Seguridad Social ── */}
         {showSSModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4" style={{ margin: 0 }}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
               <div className="flex items-center justify-between px-6 py-4 bg-green-600 rounded-t-xl shrink-0">
                 <div className="flex items-center gap-2 text-white">
@@ -2333,7 +2566,7 @@ export default function ContratistasSST() {
 
         {/* ── Sub-modal: Curso Trabajo Seguro en Alturas ── */}
         {showAlturasModal && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4" style={{ margin: 0 }}>
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[80vh] flex flex-col">
               <div className="flex items-center justify-between px-6 py-4 bg-blue-700 rounded-t-xl shrink-0">
                 <div className="flex items-center gap-2 text-white">
@@ -2752,7 +2985,7 @@ export default function ContratistasSST() {
 
       {/* Confirm delete modal */}
       {confirmDel && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" style={{ margin: 0 }}>
           <div className="bg-white rounded-xl p-6 shadow-xl w-80">
             <h3 className="font-bold text-gray-800 mb-2">¿Eliminar contratista?</h3>
             <p className="text-sm text-gray-600 mb-4">Esta acción no se puede deshacer.</p>

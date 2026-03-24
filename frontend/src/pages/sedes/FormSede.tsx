@@ -5,6 +5,7 @@ import PageHeader from '../../components/common/PageHeader'
 import { sedesApi } from '../../api/sedes.api'
 import api from '../../api/client'
 import toast from 'react-hot-toast'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface HorarioDia { inicio: string; fin: string; activo: boolean }
 
@@ -20,13 +21,6 @@ const DIA_TO_API: Record<string, string> = {
 const API_TO_DIA: Record<string, string> = Object.fromEntries(
   Object.entries(DIA_TO_API).map(([k, v]) => [v, k])
 )
-
-const TIEMPOS_DESCANSO = [
-  { value: '0.5', label: '30 minutos' },
-  { value: '1', label: '1 hora' },
-  { value: '1.5', label: '1 hora 30 min' },
-  { value: '2', label: '2 horas' },
-]
 
 const defaultHorarios: Record<string, HorarioDia> = {
   lunes:    { inicio: '07:00', fin: '17:00', activo: true },
@@ -65,6 +59,7 @@ interface CentroCosto { id: string; codigo: string; nombre: string }
 export default function FormSede() {
   const navigate = useNavigate()
   const { id } = useParams<{ id?: string }>()
+  const { t } = useTranslation()
   const isEdit = Boolean(id)
 
   const [form, setForm] = useState<FormData>(defaultForm)
@@ -73,7 +68,14 @@ export default function FormSede() {
   const [submitting, setSubmitting] = useState(false)
   const [loading, setLoading] = useState(isEdit)
 
-  // Cargar centros de costo
+  const TIEMPOS_DESCANSO = [
+    { value: '0.5', label: t('modules.headquarters.restTimeOptions.30min') },
+    { value: '1', label: t('modules.headquarters.restTimeOptions.1h') },
+    { value: '1.5', label: t('modules.headquarters.restTimeOptions.1h30') },
+    { value: '2', label: t('modules.headquarters.restTimeOptions.2h') },
+  ]
+
+  // Load cost centers
   useEffect(() => {
     api.get('/centros-costo/all')
       .then((res) => {
@@ -83,11 +85,11 @@ export default function FormSede() {
       })
       .catch((err) => {
         console.error('Error loading centros de costo:', err)
-        toast.error('Error al cargar centros de costo')
+        toast.error(t('errors.generic'))
       })
-  }, [])
+  }, [t])
 
-  // Cargar datos de sede en modo edición
+  // Load sede data in edit mode
   useEffect(() => {
     if (isEdit && id) {
       setLoading(true)
@@ -100,10 +102,10 @@ export default function FormSede() {
               s.horarios.forEach((h: { dia: string; activo: boolean; horaInicio?: string; horaFin?: string }) => {
                 const dia = API_TO_DIA[h.dia]
                 if (dia) {
-                  horarios[dia] = { 
-                    activo: h.activo, 
-                    inicio: h.horaInicio ?? '', 
-                    fin: h.horaFin ?? '' 
+                  horarios[dia] = {
+                    activo: h.activo,
+                    inicio: h.horaInicio ?? '',
+                    fin: h.horaFin ?? ''
                   }
                 }
               })
@@ -119,20 +121,19 @@ export default function FormSede() {
               horarios,
             })
           } else {
-            toast.error('Error al cargar la sede')
+            toast.error(t('errors.generic'))
           }
         })
         .catch((err) => {
           console.error('Error loading sede:', err)
-          toast.error('Error al cargar la sede')
+          toast.error(t('errors.generic'))
         })
         .finally(() => setLoading(false))
     }
-  }, [id, isEdit])
+  }, [id, isEdit, t])
 
   const set = (field: keyof FormData, value: string) => {
     setForm((p) => ({ ...p, [field]: value }))
-    // Limpiar error del campo cuando el usuario escribe
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
     }
@@ -147,68 +148,67 @@ export default function FormSede() {
 
   const validate = (): boolean => {
     const e: Partial<Record<string, string>> = {}
-    
+
     if (!form.nombre.trim()) {
-      e.nombre = 'El nombre es requerido'
+      e.nombre = t('errors.required')
     } else if (form.nombre.trim().length < 3) {
-      e.nombre = 'El nombre debe tener al menos 3 caracteres'
+      e.nombre = t('errors.minLength', { count: '3' })
     }
-    
+
     if (!form.fechaInicial) {
-      e.fechaInicial = 'La fecha inicial es requerida'
+      e.fechaInicial = t('errors.required')
     }
-    
+
     if (!form.fechaFinal) {
-      e.fechaFinal = 'La fecha final es requerida'
+      e.fechaFinal = t('errors.required')
     }
-    
+
     if (form.fechaInicial && form.fechaFinal) {
       const fechaInicial = new Date(form.fechaInicial)
       const fechaFinal = new Date(form.fechaFinal)
       if (fechaFinal < fechaInicial) {
-        e.fechaFinal = 'La fecha final debe ser posterior a la fecha inicial'
+        e.fechaFinal = t('errors.dateRange')
       }
     }
-    
+
     if (!form.estado) {
-      e.estado = 'El estado es requerido'
+      e.estado = t('errors.required')
     }
-    
+
     if (!form.nombreColeccion.trim()) {
-      e.nombreColeccion = 'El nombre de colección es requerido'
+      e.nombreColeccion = t('errors.required')
     } else if (form.nombreColeccion.trim().length < 4) {
-      e.nombreColeccion = 'El nombre debe tener al menos 4 caracteres'
+      e.nombreColeccion = t('errors.minLength', { count: '4' })
     }
-    
-    // Validar horarios activos
+
     const diasActivos = DIAS.filter(dia => form.horarios[dia].activo)
     if (diasActivos.length === 0) {
-      e.horarios = 'Debe activar al menos un día de la semana'
+      e.horarios = t('errors.atLeastOneDay')
     }
-    
+
     diasActivos.forEach(dia => {
       const h = form.horarios[dia]
       if (!h.inicio || !h.fin) {
-        e[`horario_${dia}`] = `Las horas son requeridas para ${DIAS_LABEL[dia]}`
+        e[`horario_${dia}`] = t('errors.required')
       } else if (h.inicio >= h.fin) {
-        e[`horario_${dia}`] = `La hora fin debe ser posterior a la hora inicio`
+        e[`horario_${dia}`] = t('errors.dateRange')
       }
     })
-    
+
     setErrors(e)
     return Object.keys(e).length === 0
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validate()) {
-      toast.error('Por favor corrija los errores del formulario')
+      toast.error(t('errors.fixFormErrors'))
       return
     }
-    
+
     setSubmitting(true)
-    
+
     try {
       const payload = {
         nombre: form.nombre.trim(),
@@ -225,24 +225,23 @@ export default function FormSede() {
           horaFin: form.horarios[dia].fin || undefined,
         })),
       }
-      
+
       let res
       if (isEdit && id) {
         res = await sedesApi.update(id, payload)
       } else {
         res = await sedesApi.create(payload)
       }
-      
+
       if (res.data?.success) {
-        toast.success(isEdit ? 'Sede actualizada exitosamente' : 'Sede creada exitosamente')
+        toast.success(isEdit ? t('success.updated') : t('success.saved'))
         navigate('/sedes')
       } else {
-        toast.error(res.data?.message || 'Error al guardar la sede')
+        toast.error(res.data?.message || t('errors.generic'))
       }
     } catch (error: any) {
       console.error('Error saving sede:', error)
-      const message = error?.response?.data?.message || 'Error al guardar la sede'
-      toast.error(message)
+      toast.error(error?.response?.data?.message || t('errors.generic'))
     } finally {
       setSubmitting(false)
     }
@@ -253,8 +252,8 @@ export default function FormSede() {
   }
 
   const breadcrumbs = [
-    { label: 'Gestionar Sedes', path: '/sedes' },
-    { label: isEdit ? 'Editar Sede' : 'Agregar Sede' },
+    { label: t('navigation.headquarters'), path: '/sedes' },
+    { label: isEdit ? t('modules.headquarters.edit') : t('modules.headquarters.add') },
   ]
 
   if (loading) {
@@ -265,7 +264,7 @@ export default function FormSede() {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
           </svg>
-          <span>Cargando...</span>
+          <span>{t('common.loading')}</span>
         </div>
       </div>
     )
@@ -274,30 +273,30 @@ export default function FormSede() {
   return (
     <div className="p-6">
       <PageHeader
-        title={isEdit ? 'Editar Sede' : 'Agregar Sede'}
+        title={isEdit ? t('modules.headquarters.edit') : t('modules.headquarters.add')}
         breadcrumbs={breadcrumbs}
       />
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* ── Card: Datos Generales ── */}
+        {/* ── Card: General Data ── */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              Datos Generales
+              {t('modules.headquarters.generalData')}
             </h2>
           </div>
           <div className="p-6 grid grid-cols-3 gap-x-6 gap-y-4">
 
-            {/* Nombre — ancho completo */}
+            {/* Name */}
             <div className="col-span-3">
               <label className="form-label">
-                Nombre de la Sede <span className="text-red-500">*</span>
+                {t('modules.headquarters.nameLabel')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 className={`form-input ${errors.nombre ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
-                placeholder="Ingrese nombre para la Sede"
+                placeholder={t('modules.headquarters.nameLabel')}
                 value={form.nombre}
                 onChange={(e) => set('nombre', e.target.value)}
                 disabled={submitting}
@@ -305,10 +304,10 @@ export default function FormSede() {
               {errors.nombre && <p className="text-xs text-red-500 mt-1">{errors.nombre}</p>}
             </div>
 
-            {/* Tiempo de descanso */}
+            {/* Rest time */}
             <div>
               <label className="form-label">
-                Tiempo de descanso <span className="text-red-500">*</span>
+                {t('modules.headquarters.restTime')} <span className="text-red-500">*</span>
               </label>
               <select
                 className="form-select"
@@ -316,17 +315,17 @@ export default function FormSede() {
                 onChange={(e) => set('tiempoDescanso', e.target.value)}
                 disabled={submitting}
               >
-                <option value="">Seleccione tiempo de descanso</option>
-                {TIEMPOS_DESCANSO.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
+                <option value="">{t('modules.headquarters.selectRestTime')}</option>
+                {TIEMPOS_DESCANSO.map((item) => (
+                  <option key={item.value} value={item.value}>{item.label}</option>
                 ))}
               </select>
             </div>
 
-            {/* Estado */}
+            {/* Status */}
             <div>
               <label className="form-label">
-                Estado para la Sede <span className="text-red-500">*</span>
+                {t('modules.headquarters.statusLabel')} <span className="text-red-500">*</span>
               </label>
               <select
                 className={`form-select ${errors.estado ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
@@ -334,23 +333,23 @@ export default function FormSede() {
                 onChange={(e) => set('estado', e.target.value as 'ACTIVO' | 'INACTIVO')}
                 disabled={submitting}
               >
-                <option value="">Selecciona estado</option>
-                <option value="ACTIVO">Activo</option>
-                <option value="INACTIVO">Inactivo</option>
+                <option value="">{t('common.selectOption')}</option>
+                <option value="ACTIVO">{t('common.active')}</option>
+                <option value="INACTIVO">{t('common.inactive')}</option>
               </select>
               {errors.estado && <p className="text-xs text-red-500 mt-1">{errors.estado}</p>}
             </div>
 
-            {/* Centro de costos */}
+            {/* Cost center */}
             <div>
-              <label className="form-label">Centro de costos</label>
+              <label className="form-label">{t('common.costCenter')}</label>
               <select
                 className="form-select"
                 value={form.centroCostoId}
                 onChange={(e) => set('centroCostoId', e.target.value)}
                 disabled={submitting}
               >
-                <option value="">Sin centro de costos</option>
+                <option value="">{t('modules.headquarters.noCostCenter')}</option>
                 {centrosCosto.map((cc) => (
                   <option key={cc.id} value={cc.id}>
                     {cc.codigo} – {cc.nombre}
@@ -359,10 +358,10 @@ export default function FormSede() {
               </select>
             </div>
 
-            {/* Fecha inicial */}
+            {/* Initial date */}
             <div>
               <label className="form-label">
-                Fecha inicial <span className="text-red-500">*</span>
+                {t('modules.headquarters.initialDate')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -374,10 +373,10 @@ export default function FormSede() {
               {errors.fechaInicial && <p className="text-xs text-red-500 mt-1">{errors.fechaInicial}</p>}
             </div>
 
-            {/* Fecha final */}
+            {/* Final date */}
             <div>
               <label className="form-label">
-                Fecha final <span className="text-red-500">*</span>
+                {t('modules.headquarters.finalDate')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -390,31 +389,31 @@ export default function FormSede() {
               {errors.fechaFinal && <p className="text-xs text-red-500 mt-1">{errors.fechaFinal}</p>}
             </div>
 
-            {/* Nombre de colección */}
+            {/* Collection name */}
             <div>
               <label className="form-label">
-                Nombre de colección <span className="text-red-500">*</span>
+                {t('modules.headquarters.collectionName')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 className={`form-input ${errors.nombreColeccion ? 'border-red-400 focus:border-red-400 focus:ring-red-400' : ''}`}
-                placeholder="Acorde al nombre de la sede"
+                placeholder={t('modules.headquarters.collectionHint')}
                 value={form.nombreColeccion}
                 onChange={(e) => set('nombreColeccion', e.target.value)}
                 disabled={submitting}
               />
-              <p className="text-xs text-gray-400 mt-1">Mínimo 4 caracteres.</p>
+              <p className="text-xs text-gray-400 mt-1">{t('errors.minLength', { count: '4' })}.</p>
               {errors.nombreColeccion && <p className="text-xs text-red-500 mt-1">{errors.nombreColeccion}</p>}
             </div>
 
           </div>
         </div>
 
-        {/* ── Card: Horarios ── */}
+        {/* ── Card: Schedules ── */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
           <div className="px-6 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-              Horarios de la Sede
+              {t('modules.headquarters.schedules')}
             </h2>
             {errors.horarios && (
               <p className="text-xs text-red-500">{errors.horarios}</p>
@@ -425,9 +424,9 @@ export default function FormSede() {
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase w-8"></th>
-                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase w-32">Día</th>
-                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Hora inicio</th>
-                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Hora fin</th>
+                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase w-32">{t('common.date')}</th>
+                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">{t('modules.headquarters.initialDate')}</th>
+                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">{t('modules.headquarters.finalDate')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -490,7 +489,7 @@ export default function FormSede() {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
               </svg>
             )}
-            {submitting ? 'Guardando...' : 'Guardar'}
+            {submitting ? t('common.saving') : t('common.save')}
           </button>
           <button
             type="button"
@@ -498,7 +497,7 @@ export default function FormSede() {
             onClick={handleCancel}
             disabled={submitting}
           >
-            Cancelar
+            {t('common.cancel')}
           </button>
         </div>
 

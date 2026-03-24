@@ -7,6 +7,7 @@ import Modal from '../../components/common/Modal'
 import StatusBadge from '../../components/common/StatusBadge'
 import { sedesApi } from '../../api/sedes.api'
 import toast from 'react-hot-toast'
+import { useTranslation } from '../../hooks/useTranslation'
 
 interface PlanificacionCargo {
   id: string
@@ -41,8 +42,6 @@ const DIAS_LABELS: Record<string, string> = {
   DOMINGO: 'Domingo',
 }
 
-const TABS = ['Detalle de la sede', 'Contratistas asociados', 'Departamentos asociados', 'Áreas asociadas']
-
 function formatDate(dateStr?: string | null): string {
   if (!dateStr) return '—'
   const d = new Date(dateStr)
@@ -59,6 +58,7 @@ function formatDateTime(dateStr?: string | null): string {
 
 export default function ListaSedes() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const [sedes, setSedes] = useState<Sede[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -68,6 +68,13 @@ export default function ListaSedes() {
   const [detailLoading, setDetailLoading] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
 
+  const TABS = [
+    t('modules.headquarters.tabs.detail'),
+    t('modules.headquarters.tabs.contractors'),
+    t('modules.headquarters.tabs.departments'),
+    t('modules.headquarters.tabs.areas'),
+  ]
+
   const fetchSedes = useCallback(async () => {
     try {
       setLoading(true)
@@ -75,15 +82,15 @@ export default function ListaSedes() {
       if (res.data?.success) {
         setSedes(res.data.data || [])
       } else {
-        toast.error('Error al cargar las sedes')
+        toast.error(t('errors.generic'))
       }
     } catch (error: any) {
       console.error('Error fetching sedes:', error)
-      toast.error(error?.response?.data?.message || 'Error al cargar las sedes')
+      toast.error(error?.response?.data?.message || t('errors.generic'))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     fetchSedes()
@@ -125,16 +132,16 @@ export default function ListaSedes() {
     try {
       const res = await sedesApi.remove(selected.id)
       if (res.data?.success) {
-        toast.success('Sede eliminada exitosamente')
+        toast.success(t('success.deleted'))
         setModal(null)
         setSelected(null)
         fetchSedes()
       } else {
-        toast.error(res.data?.message || 'Error al eliminar la sede')
+        toast.error(res.data?.message || t('errors.generic'))
       }
     } catch (error: any) {
       console.error('Error deleting sede:', error)
-      toast.error(error?.response?.data?.message || 'Error al eliminar la sede')
+      toast.error(error?.response?.data?.message || t('errors.generic'))
     } finally {
       setDeleting(false)
     }
@@ -149,10 +156,10 @@ export default function ListaSedes() {
   return (
     <div className="p-6">
       <PageHeader
-        title="Lista de Sedes"
+        title={t('modules.headquarters.list')}
         breadcrumbs={[
-          { label: 'Gestionar Sedes', path: '/sedes' },
-          { label: 'Lista de Sedes' },
+          { label: t('navigation.headquarters'), path: '/sedes' },
+          { label: t('modules.headquarters.list') },
         ]}
       />
 
@@ -161,7 +168,7 @@ export default function ListaSedes() {
         <input
           type="text"
           className="form-input w-52"
-          placeholder="Buscar por nombre..."
+          placeholder={t('common.search') + '...'}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -173,7 +180,7 @@ export default function ListaSedes() {
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          Agregar Sede
+          {t('modules.headquarters.add')}
         </button>
       </div>
 
@@ -182,10 +189,10 @@ export default function ListaSedes() {
         <table className="table-dark w-full">
           <thead>
             <tr>
-              <th className="text-left">Nombre</th>
-              <th className="text-left w-44">Centro costos</th>
-              <th className="text-left w-28">Estado</th>
-              <th className="text-left w-24">Acción</th>
+              <th className="text-left">{t('common.name')}</th>
+              <th className="text-left w-44">{t('common.costCenter')}</th>
+              <th className="text-left w-28">{t('common.status')}</th>
+              <th className="text-left w-24">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -197,7 +204,7 @@ export default function ListaSedes() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                     </svg>
-                    Cargando...
+                    {t('common.loading')}
                   </div>
                 </td>
               </tr>
@@ -221,7 +228,7 @@ export default function ListaSedes() {
             {!loading && filtered.length === 0 && (
               <tr>
                 <td colSpan={4} className="px-4 py-10 text-center text-sm text-gray-400 dark:text-gray-500">
-                  {search ? 'No se encontraron sedes con ese nombre' : 'No hay sedes registradas'}
+                  {t('common.noResults')}
                 </td>
               </tr>
             )}
@@ -233,14 +240,14 @@ export default function ListaSedes() {
       <Modal
         isOpen={modal === 'view'}
         onClose={handleCloseModal}
-        title={selected?.nombre ?? 'Detalle de Sede'}
+        title={selected?.nombre ?? t('modules.headquarters.detail')}
         size="xl"
       >
         {selected && (
           <div>
             {/* Created at */}
             <p className="text-xs text-gray-400 mb-4">
-              Creado En: {formatDateTime(selected.createdAt)}
+              {t('common.createdAt')}: {formatDateTime(selected.createdAt)}
             </p>
 
             {/* Tabs */}
@@ -269,7 +276,7 @@ export default function ListaSedes() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                <span className="text-sm text-gray-500">Cargando...</span>
+                <span className="text-sm text-gray-500">{t('common.loading')}</span>
               </div>
             ) : (
               <>
@@ -288,8 +295,7 @@ export default function ListaSedes() {
         isOpen={modal === 'delete'}
         onClose={handleCloseModal}
         onConfirm={handleDelete}
-        title="Confirmar Eliminación"
-        message={`¿Está seguro que desea eliminar la sede "${selected?.nombre}"? Esta acción no se puede deshacer.`}
+        message={t('common.confirmDeleteItem', { name: selected?.nombre ?? '' })}
       />
 
       {deleting && (
@@ -299,7 +305,7 @@ export default function ListaSedes() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
-            <span className="text-sm text-gray-700 dark:text-gray-300">Eliminando...</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">{t('common.saving')}</span>
           </div>
         </div>
       )}
@@ -310,28 +316,29 @@ export default function ListaSedes() {
 /* ── Sub-components ─────────────────────────────────── */
 
 function DetalleTab({ sede }: { sede: Sede }) {
+  const { t } = useTranslation()
   return (
     <div className="space-y-6">
       {/* Fields grid */}
       <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-        <DetailField label="Nombre" value={sede.nombre} />
-        <DetailField label="Fecha inicial" value={formatDate(sede.fechaInicial)} />
-        <DetailField label="Fecha final" value={formatDate(sede.fechaFinal)} />
-        <DetailField label="Centro de Costos" value={sede.centroCosto?.nombre ?? '—'} />
+        <DetailField label={t('common.name')} value={sede.nombre} />
+        <DetailField label={t('modules.headquarters.initialDate')} value={formatDate(sede.fechaInicial)} />
+        <DetailField label={t('modules.headquarters.finalDate')} value={formatDate(sede.fechaFinal)} />
+        <DetailField label={t('common.costCenter')} value={sede.centroCosto?.nombre ?? '—'} />
         <DetailField
-          label="Estado"
-          value={sede.estado === 'ACTIVO' ? 'Activo' : 'Inactivo'}
+          label={t('common.status')}
+          value={sede.estado === 'ACTIVO' ? t('common.active') : t('common.inactive')}
         />
       </div>
 
       {/* Horarios */}
       <div>
         <p className="text-sm font-semibold text-gray-700 mb-3 border-b border-gray-100 pb-2">
-          Horarios.
+          {t('modules.headquarters.schedules')}
         </p>
         <div className="grid grid-cols-2 gap-x-8 gap-y-2">
           <HorarioRow
-            label="Tiempo de descanso"
+            label={t('modules.headquarters.restTime')}
             value={sede.tiempoDescanso ? `${sede.tiempoDescanso} min` : '0 min'}
           />
           {DIAS_ORDER.map((dia) => {
@@ -349,6 +356,7 @@ function DetalleTab({ sede }: { sede: Sede }) {
 }
 
 function ContratistasTab({ sede }: { sede: Sede }) {
+  const { t } = useTranslation()
   const cargos = sede.planificacionesCargos ?? []
   return (
     <div className="overflow-x-auto">
@@ -356,22 +364,22 @@ function ContratistasTab({ sede }: { sede: Sede }) {
         <thead>
           <tr className="border-b border-gray-200">
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Código
+              {t('common.code')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Contratista
+              {t('common.contractor')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Fecha inicial
+              {t('modules.headquarters.initialDate')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Fecha final
+              {t('modules.headquarters.finalDate')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Estado
+              {t('common.status')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Acciones
+              {t('common.actions')}
             </th>
           </tr>
         </thead>
@@ -379,7 +387,7 @@ function ContratistasTab({ sede }: { sede: Sede }) {
           {cargos.length === 0 ? (
             <tr>
               <td colSpan={6} className="py-8 text-center text-sm text-gray-400">
-                No hay contratistas asociados
+                {t('modules.headquarters.noContractors')}
               </td>
             </tr>
           ) : (
@@ -395,7 +403,7 @@ function ContratistasTab({ sede }: { sede: Sede }) {
                   <StatusBadge active={c.contratista.estado === 'ACTIVO'} />
                 </td>
                 <td className="py-2 px-3">
-                  {/* acciones futuras */}
+                  {/* future actions */}
                 </td>
               </tr>
             ))
@@ -407,26 +415,27 @@ function ContratistasTab({ sede }: { sede: Sede }) {
 }
 
 function DepartamentosTab() {
+  const { t } = useTranslation()
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Nombre
+              {t('common.name')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Estado
+              {t('common.status')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Acciones
+              {t('common.actions')}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td colSpan={3} className="py-8 text-center text-sm text-gray-400">
-              No hay departamentos asociados
+              {t('modules.headquarters.noDepartments')}
             </td>
           </tr>
         </tbody>
@@ -436,29 +445,30 @@ function DepartamentosTab() {
 }
 
 function AreasTab() {
+  const { t } = useTranslation()
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Nombre
+              {t('common.name')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
               Departamento
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Estado
+              {t('common.status')}
             </th>
             <th className="text-left py-2 px-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Acciones
+              {t('common.actions')}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td colSpan={4} className="py-8 text-center text-sm text-gray-400">
-              No hay áreas asociadas
+              {t('modules.headquarters.noAreas')}
             </td>
           </tr>
         </tbody>
